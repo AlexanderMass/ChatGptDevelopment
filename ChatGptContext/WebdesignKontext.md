@@ -26,3 +26,15 @@ Die Anwendung soll spaeter helfen, Interaktionsverlaeufe, Codeaenderungen und ag
 ## Arbeitsprinzip
 
 Die Webanwendung soll als Analyse- und Arbeitswerkzeug dienen, nicht als Marketingseite. Prioritaet haben klare Navigation, nachvollziehbare Zusammenhaenge und eine Darstellung, die Entwicklungsverlaeufe analytisch zugaenglich macht.
+
+## Technische Grundentscheidung
+
+Der initiale Webaufbau liegt unter `Web\frontend` als Vue-3- und Vite-Projekt.
+
+Die erste Oberflaeche ist bewusst als Arbeitslayout aufgebaut:
+
+- Header im oberen Bereich als globaler Einstieg
+- linke Administrationsspalte fuer Projektbereiche
+- rechtes Hauptfenster fuer Detailansichten und inhaltliche Vertiefung
+
+Diese Struktur soll im weiteren Projektverlauf schrittweise zu einer echten Analyseoberflaeche fuer API-, Datenbank- und Metrikansichten ausgebaut werden.
