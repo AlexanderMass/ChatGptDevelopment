@@ -34,6 +34,7 @@ Die fachliche Analyse wird wieder als eigener Kontext dokumentiert, weil die kon
 - `DatabaseContext.md`: Datenmodell, Persistenz und datenbanknahe Implementierung
 - `WebDesignContext.md`: Webanwendung, Visualisierung und Interaktionskonzepte
 - `ReportContext.md`: leichtgewichtiges Arbeitsreporting und Git-Arbeitsberichte
+- `MethodContext.md`: wiederverwendbare Vorgehensstruktur für KI-gestützte Projektanalyse
 
 ## Naechste sinnvolle Schritte
 

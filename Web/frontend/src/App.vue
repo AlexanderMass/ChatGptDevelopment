@@ -17,6 +17,47 @@
       </div>
     </section>
 
+    <section v-if="activeSection === 'use-cases'" class="use-case-map" aria-label="Use-Case-Design">
+      <div class="use-case-map__actor">Anwender</div>
+      <div class="use-case-map__system">
+        <p class="use-case-map__system-label">ChatGptDevelopment</p>
+        <button
+          v-for="useCase in useCases"
+          :key="useCase.id"
+          class="use-case-map__bubble"
+          :class="`use-case-map__bubble--${useCase.id}`"
+          type="button"
+          @click="selectSection(useCase.id)"
+        >
+          <span>{{ useCase.label }}</span>
+          <small>{{ useCase.goal }}</small>
+        </button>
+        <svg class="use-case-map__relations" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <marker
+              id="include-arrow"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" />
+            </marker>
+          </defs>
+          <path class="use-case-map__relation" d="M 50 24 L 25 43" />
+          <path class="use-case-map__relation" d="M 50 24 L 75 43" />
+          <path class="use-case-map__relation" d="M 75 62 L 62 82" />
+          <path class="use-case-map__relation" d="M 75 62 L 88 82" />
+          <text class="use-case-map__relation-label" x="32" y="34">&lt;&lt;include&gt;&gt;</text>
+          <text class="use-case-map__relation-label" x="57" y="34">&lt;&lt;include&gt;&gt;</text>
+          <text class="use-case-map__relation-label" x="58" y="74">&lt;&lt;include&gt;&gt;</text>
+          <text class="use-case-map__relation-label" x="78" y="74">&lt;&lt;include&gt;&gt;</text>
+        </svg>
+      </div>
+    </section>
+
     <section class="detail-grid">
       <article class="detail-card detail-card--primary">
         <p class="detail-card__label">Rolle im Projekt</p>
@@ -32,7 +73,7 @@
       </article>
 
       <article class="detail-card">
-        <p class="detail-card__label">Naechster Ausbauschritt</p>
+        <p class="detail-card__label">Nächster Ausbauschritt</p>
         <p>{{ activeItem.nextStep }}</p>
       </article>
     </section>
@@ -43,7 +84,7 @@
 import { computed, ref } from "vue";
 import AppShell from "./components/AppShell.vue";
 import NavigationTree from "./components/NavigationTree.vue";
-import { sections } from "./data/sections.js";
+import { sections, useCases } from "./data/sections.js";
 
 const activeSection = ref("dashboard");
 
