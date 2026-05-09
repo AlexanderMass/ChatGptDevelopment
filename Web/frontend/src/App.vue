@@ -1,9 +1,8 @@
-﻿<template>
+<template>
   <AppShell @select-section="selectSection">
     <template #sidebar>
       <NavigationTree
         :active-section="activeSection"
-        :sections="sections"
         @select-section="selectSection"
       />
     </template>
@@ -46,7 +45,7 @@ import AppShell from "./components/AppShell.vue";
 import NavigationTree from "./components/NavigationTree.vue";
 import { sections } from "./data/sections.js";
 
-const activeSection = ref("overview");
+const activeSection = ref("dashboard");
 
 const activeItem = computed(
   () => sections.find((section) => section.id === activeSection.value) ?? sections[0],

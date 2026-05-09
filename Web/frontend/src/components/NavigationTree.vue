@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <nav class="nav-tree" aria-label="Projektbereiche">
     <p class="nav-tree__title">Administrationsbereich</p>
 
@@ -6,7 +6,7 @@
       v-for="section in sections"
       :key="section.id"
       class="nav-tree__item"
-      :class="{ 'nav-tree__item--active': section.id === activeSection }"
+      :class="{ 'nav-tree__item--active': activeSection === section.id }"
       type="button"
       @click="$emit('select-section', section.id)"
     >
@@ -17,13 +17,11 @@
 </template>
 
 <script setup>
+import { sections } from "../data/sections.js";
+
 defineProps({
   activeSection: {
     type: String,
-    required: true,
-  },
-  sections: {
-    type: Array,
     required: true,
   },
 });

@@ -1,2 +1,3 @@
-﻿Web/frontend/node_modules/
+Web/frontend/node_modules/
 Web/frontend/dist/
+.env.local

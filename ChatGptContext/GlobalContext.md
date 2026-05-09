@@ -1,4 +1,4 @@
-﻿# Projektkontext
+# GlobalContext
 
 ## Projektziel
 
@@ -18,7 +18,7 @@ Im Zentrum steht die Konzeption einer technischen und methodischen Grundlage fue
 - `Db`: Datenmodellierung, Persistenz und Verknuepfung der Datenquellen
 - `Web`: Oberflaechen, Visualisierung und Exploration der erfassten Entwicklungsdaten
 
-Analysearbeiten werden nicht als eigenes Teilprojekt isoliert, sondern innerhalb dieser drei Bereiche fachlich mitgefuehrt.
+Die fachliche Analyse wird wieder als eigener Kontext dokumentiert, weil die konzeptionellen Fragen zu Projektvergleich, Work Sessions, Ereignisstrukturen und Metrikbildung ueber mehrere Teilprojekte hinweg reichen.
 
 ## Repository-Struktur
 
@@ -29,13 +29,15 @@ Analysearbeiten werden nicht als eigenes Teilprojekt isoliert, sondern innerhalb
 
 ## Teilprojekt-Kontexte
 
-- `ApiKontext.md`: API-Schicht, Schnittstellenlogik und Datenverarbeitung
-- `DatenbankKontext.md`: Datenmodell, Persistenz und datenbanknahe Implementierung
-- `WebdesignKontext.md`: Webanwendung, Visualisierung und Interaktionskonzepte
+- `AnalysisContext.md`: fachliche Modellierung, Metriklogik und projektuebergreifende Begriffsarbeit
+- `ApiContext.md`: API-Schicht, Schnittstellenlogik und Datenverarbeitung
+- `DatabaseContext.md`: Datenmodell, Persistenz und datenbanknahe Implementierung
+- `WebDesignContext.md`: Webanwendung, Visualisierung und Interaktionskonzepte
+- `ReportContext.md`: leichtgewichtiges Arbeitsreporting und Git-Arbeitsberichte
 
 ## Naechste sinnvolle Schritte
 
-1. Die Rollen von `Api`, `Db` und `Web` fachlich und technisch weiter schaerfen.
-2. Ein erstes gemeinsames Datenmodell fuer Dialogdaten, Commits und Datei-Aenderungen skizzieren.
-3. Den geplanten Datenfluss von Erfassung ueber Speicherung bis zur Analyse und Visualisierung beschreiben.
+1. Das fachliche Kernmodell fuer Projekte, Work Sessions, Interaktionen und Entwicklungsereignisse schaerfen.
+2. Die Rolle der API als standardisierte Erfassungsschicht fuer externe Projekte weiter konkretisieren.
+3. Ein erstes gemeinsames Datenmodell fuer Dialogdaten, Commits und Datei-Aenderungen skizzieren.
 4. Danach konkrete Artefakte in den Teilprojekten aufbauen.

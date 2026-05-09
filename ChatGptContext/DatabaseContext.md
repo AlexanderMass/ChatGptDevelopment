@@ -1,4 +1,4 @@
-﻿# DatenbankKontext
+# DatabaseContext
 
 ## Zugehoeriger Arbeitsordner
 
@@ -19,8 +19,8 @@ Ziel ist der Aufbau einer gemeinsamen Datenbasis fuer Dialogdaten zwischen Mensc
 
 ## Abgrenzung
 
-- Schnittstellenlogik und Datenbereitstellung gehoeren primaer in den `ApiKontext`.
-- Oberflaechen, Visualisierung und Nutzerinteraktion gehoeren in den `WebdesignKontext`.
+- Schnittstellenlogik und Datenbereitstellung gehoeren primaer in den `ApiContext`.
+- Oberflaechen, Visualisierung und Nutzerinteraktion gehoeren in den `WebDesignContext`.
 - Analysefragen werden hier nur insoweit behandelt, wie sie die Modellierung und Abfragefaehigkeit der Datenbasis beeinflussen.
 
 ## Arbeitsprinzip

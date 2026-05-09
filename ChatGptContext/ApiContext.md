@@ -1,4 +1,4 @@
-﻿# ApiKontext
+# ApiContext
 
 ## Zugehoeriger Arbeitsordner
 
@@ -19,8 +19,8 @@ Im Fokus stehen Schnittstellen und Verarbeitungslogiken, ueber die Dialogdaten, 
 
 ## Abgrenzung
 
-- Persistenz, Schemafragen und datenbankinterne Modellierung gehoeren primaer in den `DatenbankKontext`.
-- Oberflaechen, Navigation und Visualisierung gehoeren primaer in den `WebdesignKontext`.
+- Persistenz, Schemafragen und datenbankinterne Modellierung gehoeren primaer in den `DatabaseContext`.
+- Oberflaechen, Navigation und Visualisierung gehoeren primaer in den `WebDesignContext`.
 - Fachliche Analysefragen werden innerhalb der API nur soweit behandelt, wie sie fuer Verarbeitung und Bereitstellung relevant sind.
 
 ## Arbeitsprinzip
