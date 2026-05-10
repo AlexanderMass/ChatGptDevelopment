@@ -22,11 +22,9 @@ export const useCases = [
         ],
       },
       {
-        title: "Applikationsdesign",
+        title: "Oberflächendesign",
         paragraphs: [
-          "Das Dashboard wird als einzelne Arbeitsfläche mit zwei fachlichen Haupt-Panels gedacht. Das erste Panel dient der Projektpflege, das zweite Panel der Projektdatenpräsentation. Damit bildet die Oberfläche die Include-Struktur des Use-Case-Modells direkt ab.",
-          "Das Panel Projektpflege zeigt eine Liste der bereits verwalteten Projekte. Zusätzlich stellt es zwei zentrale Aktionen bereit: Über Neues Projekt anlegen öffnet sich ein Dialog zur Erfassung eines weiteren Projekts. Über Git-Daten analysieren werden die Projektstammdaten gelesen, die zugehörigen Git-Informationen ausgewertet und für die spätere Präsentation in der Datenbank abgelegt.",
-          "Das Panel Projektdatenpräsentation bleibt an dieser Stelle bewusst grob beschrieben. Es ist der Bereich, in dem die erfassten Projektdaten später sichtbar und auswertbar werden. Die konkreten Präsentationsformen werden in den inkludierten Use Cases Präsentation in Tabellenform und Präsentation in grafischer Form weiter ausgearbeitet.",
+          "Das Dashboard wird als einzelne Arbeitsfläche mit zwei fachlichen Haupt-Panels gedacht. Das obere Panel dient der Projektpflege, das untere Panel der Projektdatenpräsentation. Beide Teilpanels nehmen die gesamte Breite der Applikation ein. Der obere Projektbereich nimmt etwa 25 Prozent der Höhe ein, der untere Präsentationsbereich etwa 75 Prozent. Damit bildet die Oberfläche die Include-Struktur des Use-Case-Modells direkt ab.",
         ],
       },
     ],
@@ -44,6 +42,30 @@ export const useCases = [
       "Git-Daten für verwaltete Projekte einlesen",
     ],
     includes: ["uc-create-project", "uc-analyze-git-data"],
+    chips: [],
+    contentSections: [
+      {
+        title: "Funktion",
+        paragraphs: [
+          "Der Use Case Projekte pflegen beschreibt den operativen Umgang mit den in der Datenbank verwalteten ChatGPT-Projekten. Der Nutzer soll sehen können, welche Projekte bereits angelegt sind und welche Repository-Informationen ihnen zugeordnet wurden.",
+          "Zu jedem Projekt werden die gespeicherten Projektinformationen aus der Datenbank angezeigt. Dazu gehören auch verdichtete beziehungsweise aggregierte Metrikinformationen, die aus den zugeordneten Git-Repositories und Check-in-Metriken abgeleitet werden.",
+          "Die Applikation bietet in diesem Bereich zwei operative Funktionen an: neue Projekte anlegen und Git-Daten analysieren. Diese Funktionen sprechen die jeweils referenzierten Use Cases an; ihre Detailbeschreibung erfolgt dort.",
+          "Der Use Case bildet damit die fachliche Klammer für zwei untergeordnete Aufgaben: neue Projekte anlegen und Git-Daten analysieren. Die Detailregeln dieser Aufgaben werden in den inkludierten Use Cases weiter beschrieben.",
+        ],
+      },
+      {
+        title: "Oberflächendesign",
+        paragraphs: [
+          "Die Oberfläche wird als Projektpflege-Panel innerhalb des Dashboards gedacht. Auf diesem Panel werden drei Elemente platziert: eine Tabelle mit den Projektdaten sowie zwei Buttons für die operativen Funktionen.",
+          "Die Projekttabelle zeigt die Spalten Projektname, Status, Repository-Anzahl, erster Check-in, letzter Check-in, Check-in-Anzahl und getrackte Dateien. Die Sortierung erfolgt amerikanisch beziehungsweise zeitlich absteigend: Das Projekt mit dem neuesten letzten Check-in steht ganz oben, die weiteren Projekte folgen entsprechend absteigend. Der Status beschreibt den Bearbeitungs- beziehungsweise Beobachtungsstatus des Projekts, zum Beispiel aktiv, pausiert oder archiviert.",
+          "Wenn der Nutzer mit der Maus auf eine Projektzeile geht, öffnet sich ein Tooltip mit einer kompakten Repository-Tabelle. Diese Tooltip-Tabelle zeigt die zugeordneten Repositories und deren aggregierte Daten, sodass die 1:n-Beziehung zwischen Projekt und Repositories sichtbar wird, ohne die Haupttabelle zu überladen.",
+          "Das Panel ist horizontal unterteilt. Links steht die Projekttabelle; rechts befindet sich eine schmale Aktionsspalte mit zwei übereinander angeordneten Buttons. Der obere Button stellt die Funktion zur Neuanlage von Projekten bereit, der untere Button startet die Analyse der Git-Daten.",
+          "Die beiden Buttons sind gleich groß und nur etwas größer als ihre textuelle Beschreibung. Die Projekttabelle nimmt den gesamten restlichen verfügbaren Raum in der Breite ein. Dadurch bleiben Projektübersicht und operative Pflegefunktionen in einem gemeinsamen Arbeitsbereich gebündelt.",
+          "Wenn der Nutzer auf den Button Neue Projekte anlegen drückt, öffnet sich ein Pop-up-Window mit der entsprechenden Erfassungsfunktion. Die fachliche Detailbeschreibung erfolgt im Use Case Neue Projekte anlegen.",
+          "Wenn der Nutzer auf den Button Git-Daten analysieren drückt, startet eine Python-Funktion. Diese analysiert die zugeordneten Git-Repositories, ermittelt die relevanten Git- und Metrikdaten und legt die Ergebnisse in der Datenbank ab. Die fachliche Detailbeschreibung erfolgt im Use Case Git-Daten analysieren.",
+        ],
+      },
+    ],
   },
   {
     id: "uc-create-project",
@@ -57,6 +79,38 @@ export const useCases = [
       "Grunddaten und Beschreibung erfassen",
       "Optional Repository- oder Arbeitsordnerbezug hinterlegen",
     ],
+    chips: [],
+    contentSections: [
+      {
+        title: "Funktion",
+        paragraphs: [
+          "Der Use Case Neue Projekte anlegen beschreibt die Erfassung eines neuen ChatGPT-Projekts als verwaltbares Analyseobjekt.",
+          "Der Nutzer kann einen Projektnamen eingeben und separat eine Projektbeschreibung erfassen.",
+          "Das System liest aus dem Repository-Bereich eine Liste verfügbarer Git-Repositories aus und stellt sie zur Auswahl bereit. Dadurch können ein oder mehrere Repositories dem neu angelegten Projekt zugeordnet werden.",
+          "Drückt der Nutzer auf den Button Projekt anlegen, werden die administrierten Daten in der Datenbank gespeichert. Dazu gehören die Projektdaten sowie die Relation zwischen dem neuen Projekt und den ausgewählten Repositories.",
+          "Drückt der Nutzer auf den Button Abbrechen, wird der Pop-up-Dialog geschlossen, ohne ein neues Projekt zu speichern.",
+        ],
+        subsections: [
+          {
+            title: "Repository-Daten ermitteln",
+            paragraphs: [
+              "Damit ein neues Projekt korrekt angelegt werden kann, müssen die zuordenbaren Repository-Daten bereits verfügbar sein. Das System ermittelt deshalb aus den vorhandenen Git-Repositories die initial benötigten Informationen für die Datenbankpflege.",
+              "Zu diesen Informationen gehören insbesondere der lokale Repository-Pfad, soweit vorhanden die Remote-URL sowie das Datum des ersten Check-ins. Diese Daten bilden die Grundlage dafür, Repositories im Dialog auswählbar zu machen und ihre Relation zum neuen Projekt zu speichern.",
+              "Die Funktion Repository-Daten ermitteln ist damit eine vorbereitende Systemfunktion innerhalb des Use Cases Neue Projekte anlegen. Sie stellt sicher, dass beim Speichern des Projekts alle notwendigen Repository-Stammdaten und Zuordnungsinformationen vorliegen.",
+            ],
+          },
+        ],
+      },
+      {
+        title: "Oberflächendesign",
+        paragraphs: [
+          "Die Oberfläche wird als Pop-up-Window gedacht, das aus dem Projektpflege-Panel heraus geöffnet wird. Das Dialogfenster besitzt rechts oben den üblichen Schließen-Button X.",
+          "Im oberen Sub-Panel werden die Projektdaten erfasst. Links steht ein einzeiliges Textfeld für den Projektnamen. Rechts daneben wird eine mehrzeilige Textarea für die Projektbeschreibung angeboten.",
+          "Darunter befindet sich ein zweites Sub-Panel für die Repository-Zuordnung. Die Auswahl wird als Zwei-Listen-Mechanik umgesetzt: links verfügbare Repositories, rechts dem Projekt zugeordnete Repositories. Über Hinzufügen und Entfernen können Repositories zwischen beiden Listen bewegt werden.",
+          "Am unteren Rand des Pop-up-Windows stehen die beiden Dialogaktionen Projekt anlegen und Abbrechen.",
+        ],
+      },
+    ],
   },
   {
     id: "uc-analyze-git-data",
@@ -69,6 +123,33 @@ export const useCases = [
       "Verwaltetes Projekt auswählen",
       "Git-Informationen aus dem zugeordneten Repository einlesen",
       "Eingelesene Daten für Tabellen und grafische Auswertungen bereitstellen",
+    ],
+    chips: [],
+    contentSections: [
+      {
+        title: "Funktion",
+        paragraphs: [
+          "Der Use Case Git-Daten analysieren beschreibt eine operative Systemfunktion ohne eigene Oberfläche. Sie wird aus dem Projektpflege-Panel heraus gestartet.",
+          "Die Funktion iteriert nur über solche Git-Repositories, die in der Datenbank mindestens einem Projekt zugeordnet sind. Nicht zugeordnete Repositories werden nicht analysiert.",
+          "Für die zugeordneten Repositories liest die Funktion relevante Git-Informationen aus und schreibt die daraus abgeleiteten Daten in die Datenbank.",
+        ],
+        subsections: [
+          {
+            title: "Zu ermittelnde Repository-Kennzahlen",
+            paragraphs: [
+              "Für jedes zugeordnete Repository werden die verdichteten Repository-Kennzahlen `lastCheckInDate` und `checkInCount` ermittelt und in `git_repository` gespeichert.",
+              "`firstCheckInDate` wird bereits im Use Case Neue Projekte anlegen bei der initialen Repository-Datenermittlung bestimmt.",
+            ],
+          },
+          {
+            title: "Zu ermittelnde Check-in-Metriken",
+            paragraphs: [
+              "Für die einzelnen Check-ins werden die Metrikdaten `commitHash`, `commitDate`, `messageSubject`, `changedFileCount`, `addedLineCount`, `deletedLineCount`, `netLineChange`, `churnLineCount`, `trackedFileCount` und `isMergeCommit` ermittelt.",
+              "Diese Daten werden in `check_in_metric` gespeichert und bilden die Grundlage für spätere tabellarische und grafische Auswertungen.",
+            ],
+          },
+        ],
+      },
     ],
   },
   {
