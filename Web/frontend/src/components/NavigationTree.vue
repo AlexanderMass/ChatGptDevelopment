@@ -2,78 +2,22 @@
   <nav class="nav-tree" aria-label="Projektbereiche">
     <p class="nav-tree__title">Administrationsbereich</p>
 
-    <div v-for="section in rootSections" :key="section.id" class="nav-tree__branch">
-      <button
-        class="nav-tree__item"
-        :class="{
-          'nav-tree__item--active': activeSection === section.id,
-          'nav-tree__item--active-path': hasActiveDescendant(section),
-        }"
-        type="button"
-        @click="$emit('select-section', section.id)"
-      >
-        <span class="nav-tree__item-label">{{ section.label }}</span>
-      </button>
-
-      <div v-if="section.children" class="nav-tree__children">
-        <div
-          v-for="child in section.children"
-          :key="child.id"
-          class="nav-tree__branch"
-        >
-          <button
-            class="nav-tree__item nav-tree__item--child"
-            :class="{
-              'nav-tree__item--active': activeSection === child.id,
-              'nav-tree__item--active-path': hasActiveDescendant(child),
-              'nav-tree__item--folder': child.children,
-              'nav-tree__item--expanded': isExpanded(child.id),
-            }"
-            type="button"
-            @click="handleChildSelect(child)"
-          >
-            <span class="nav-tree__item-label">{{ child.label }}</span>
-          </button>
-
-          <div v-if="child.children && isExpanded(child.id)" class="nav-tree__grandchildren">
-            <button
-              v-for="grandchild in child.children"
-              :key="grandchild.id"
-              class="nav-tree__item nav-tree__item--grandchild"
-              :class="{ 'nav-tree__item--active': activeSection === grandchild.id }"
-              type="button"
-              @click="$emit('select-section', grandchild.id)"
-            >
-              <span class="nav-tree__item-label">{{ grandchild.label }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <NavigationTreeNode
+      v-for="section in rootSections"
+      :key="section.id"
+      :node="section"
+      :active-section="activeSection"
+      :expanded-nodes="expandedNodes"
+      @select-section="$emit('select-section', $event)"
+      @toggle-node="toggleNode"
+    />
   </nav>
 </template>
 
 <script setup>
 import { ref, watch } from "vue";
+import NavigationTreeNode from "./NavigationTreeNode.vue";
 import { sections } from "../data/sections.js";
-
-const childIds = new Set(
-  sections.flatMap((section) => section.children?.map((child) => child.id) ?? []),
-);
-
-const rootSections = sections.filter((section) => !childIds.has(section.id));
-const expandableChildIds = new Set(
-  sections.flatMap((section) =>
-    section.children?.filter((child) => child.children).map((child) => child.id) ?? [],
-  ),
-);
-const grandchildIdsByParent = new Map(
-  sections.flatMap((section) =>
-    section.children
-      ?.filter((child) => child.children)
-      .map((child) => [child.id, new Set(child.children.map((grandchild) => grandchild.id))]) ?? [],
-  ),
-);
 
 const props = defineProps({
   activeSection: {
@@ -82,7 +26,16 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["select-section"]);
+defineEmits(["select-section"]);
+
+const childIds = new Set();
+const parentIdsByChild = new Map();
+
+for (const section of sections) {
+  collectTreeRelations(section);
+}
+
+const rootSections = sections.filter((section) => !childIds.has(section.id));
 const expandedNodes = ref(new Set());
 
 watch(
@@ -91,16 +44,12 @@ watch(
   { immediate: true },
 );
 
-function handleChildSelect(child) {
-  emit("select-section", child.id);
-
-  if (expandableChildIds.has(child.id)) {
-    toggleNode(child.id);
+function collectTreeRelations(section) {
+  for (const child of section.children ?? []) {
+    childIds.add(child.id);
+    parentIdsByChild.set(child.id, section.id);
+    collectTreeRelations(child);
   }
-}
-
-function isExpanded(sectionId) {
-  return expandedNodes.value.has(sectionId);
 }
 
 function toggleNode(sectionId) {
@@ -117,21 +66,13 @@ function toggleNode(sectionId) {
 
 function expandActiveSectionPath(sectionId) {
   const nextExpandedNodes = new Set(expandedNodes.value);
+  let parentId = parentIdsByChild.get(sectionId);
 
-  for (const [parentId, grandchildIds] of grandchildIdsByParent) {
-    if (grandchildIds.has(sectionId)) {
-      nextExpandedNodes.add(parentId);
-    }
+  while (parentId) {
+    nextExpandedNodes.add(parentId);
+    parentId = parentIdsByChild.get(parentId);
   }
 
   expandedNodes.value = nextExpandedNodes;
-}
-
-function hasActiveDescendant(section) {
-  return Boolean(
-    section.children?.some(
-      (child) => child.id === props.activeSection || hasActiveDescendant(child),
-    ),
-  );
 }
 </script>

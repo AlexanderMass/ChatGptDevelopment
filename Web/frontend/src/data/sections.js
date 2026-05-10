@@ -12,6 +12,24 @@ export const useCases = [
       "In Projektpflege oder Präsentationsansichten wechseln",
     ],
     includes: ["uc-maintain-projects", "uc-present-project-data"],
+    chips: [],
+    contentSections: [
+      {
+        title: "Funktion",
+        paragraphs: [
+          "Das Dashboard ist der zentrale Einstieg in die spätere Anwendung. Es soll dem Anwender zeigen, welche ChatGPT-Projekte verwaltet werden und welche Projektdaten für eine Auswertung zur Verfügung stehen.",
+          "Der Use Case bündelt zwei fachliche Aufgaben: Projekte müssen gepflegt werden können, und die vorhandenen Projektdaten müssen präsentiert werden. Die genauere Ausgestaltung dieser Aufgaben wird in den inkludierten Use Cases beschrieben.",
+        ],
+      },
+      {
+        title: "Applikationsdesign",
+        paragraphs: [
+          "Das Dashboard wird als einzelne Arbeitsfläche mit zwei fachlichen Haupt-Panels gedacht. Das erste Panel dient der Projektpflege, das zweite Panel der Projektdatenpräsentation. Damit bildet die Oberfläche die Include-Struktur des Use-Case-Modells direkt ab.",
+          "Das Panel Projektpflege zeigt eine Liste der bereits verwalteten Projekte. Zusätzlich stellt es zwei zentrale Aktionen bereit: Über Neues Projekt anlegen öffnet sich ein Dialog zur Erfassung eines weiteren Projekts. Über Git-Daten analysieren werden die Projektstammdaten gelesen, die zugehörigen Git-Informationen ausgewertet und für die spätere Präsentation in der Datenbank abgelegt.",
+          "Das Panel Projektdatenpräsentation bleibt an dieser Stelle bewusst grob beschrieben. Es ist der Bereich, in dem die erfassten Projektdaten später sichtbar und auswertbar werden. Die konkreten Präsentationsformen werden in den inkludierten Use Cases Präsentation in Tabellenform und Präsentation in grafischer Form weiter ausgearbeitet.",
+        ],
+      },
+    ],
   },
   {
     id: "uc-maintain-projects",
@@ -19,11 +37,38 @@ export const useCases = [
     actor: "Anwender",
     goal: "ChatGPT-Projekte als auswertbare Einheiten anlegen, bearbeiten und aktuell halten.",
     summary:
-      "Der Anwender erfasst und aktualisiert Projekte mit Name, Beschreibung, Status und optionalem Repository-Bezug. Das Projekt bildet den Anker für Dashboard, Sessions und spätere Auswertungen.",
+      "Der Anwender pflegt die in der Applikation verfolgten Projekte. Dazu gehört nicht nur das Erfassen von Projektdaten, sondern auch das Einlesen projektbezogener Git-Daten.",
     steps: [
-      "Projekt anlegen oder aus vorhandenen Daten übernehmen",
-      "Beschreibung, Ziel und technische Bezüge dokumentieren",
-      "Projektstatus im Dashboard sichtbar machen",
+      "Neue Projekte anlegen",
+      "Bestehende Projektinformationen aktualisieren",
+      "Git-Daten für verwaltete Projekte einlesen",
+    ],
+    includes: ["uc-create-project", "uc-analyze-git-data"],
+  },
+  {
+    id: "uc-create-project",
+    label: "Neue Projekte anlegen",
+    actor: "Anwender",
+    goal: "Ein neues ChatGPT-Projekt als verwaltbares Analyseobjekt anlegen.",
+    summary:
+      "Der Anwender erfasst ein neues Projekt mit Namen, Beschreibung und optionalem Repository-Bezug. Dadurch wird es im Dashboard sichtbar und kann später mit Aktivitäts- und Git-Daten verknüpft werden.",
+    steps: [
+      "Neues Projekt anlegen",
+      "Grunddaten und Beschreibung erfassen",
+      "Optional Repository- oder Arbeitsordnerbezug hinterlegen",
+    ],
+  },
+  {
+    id: "uc-analyze-git-data",
+    label: "Git-Daten analysieren",
+    actor: "Anwender",
+    goal: "Git-Daten für verwaltete Projekte einlesen und für spätere Präsentationen verfügbar machen.",
+    summary:
+      "Für die in der Applikation verwalteten Projekte werden relevante Git-Informationen eingelesen. Dazu können Commits, geänderte Dateien, Zeitpunkte und Statusinformationen gehören.",
+    steps: [
+      "Verwaltetes Projekt auswählen",
+      "Git-Informationen aus dem zugeordneten Repository einlesen",
+      "Eingelesene Daten für Tabellen und grafische Auswertungen bereitstellen",
     ],
   },
   {
@@ -64,6 +109,43 @@ export const useCases = [
       "Grafische Ansicht öffnen",
       "Diagrammtyp oder Auswertungsfokus wählen",
       "Verlauf, Verteilung oder Vergleich visuell auswerten",
+    ],
+  },
+];
+
+export const useCaseTree = [
+  {
+    id: "uc-use-dashboard",
+    label: "Dashboard nutzen",
+    children: [
+      {
+        id: "uc-maintain-projects",
+        label: "Projekte pflegen",
+        children: [
+          {
+            id: "uc-create-project",
+            label: "Neue Projekte anlegen",
+          },
+          {
+            id: "uc-analyze-git-data",
+            label: "Git-Daten analysieren",
+          },
+        ],
+      },
+      {
+        id: "uc-present-project-data",
+        label: "Projektdaten präsentieren",
+        children: [
+          {
+            id: "uc-present-table",
+            label: "Präsentation in Tabellenform",
+          },
+          {
+            id: "uc-present-graph",
+            label: "Präsentation in grafischer Form",
+          },
+        ],
+      },
     ],
   },
 ];
@@ -113,15 +195,11 @@ export const sections = [
         id: "use-cases",
         label: "Use Cases",
         meta: "UML-Sicht",
-        children: useCases.map((useCase) => ({
-          id: useCase.id,
-          label: useCase.label,
-          meta: useCase.actor,
-        })),
+        children: useCaseTree,
       },
       {
         id: "data-modeling",
-        label: "Datenmodellierung",
+        label: "Modellierung",
         meta: "Tabellenstruktur",
       },
     ],
@@ -137,7 +215,7 @@ export const sections = [
     chips: ["Akteure", "Use Cases", "Dokumentation"],
     focusTitle: "Interaktive Modellierung",
     focusText:
-      "Die Use-Case-Seite verbindet eine grafische Übersicht mit Detailseiten. Der Haupt-Use-Case Dashboard nutzen inkludiert Projektpflege und Präsentation, wobei die Präsentation in Tabellen- und Grafikform weiter aufgeteilt wird.",
+      "Die Use-Case-Seite verbindet eine grafische Übersicht mit Detailseiten. Der Haupt-Use-Case Dashboard nutzen inkludiert Projektpflege und Präsentation. Projektpflege teilt sich in Projektanlage und Git-Datenanalyse auf, Präsentation in Tabellen- und Grafikform.",
     focusPoints: [
       "Use Cases gemeinsam fachlich schneiden",
       "Akteure, Ziele und Hauptabläufe dokumentieren",
@@ -145,31 +223,145 @@ export const sections = [
     ],
     nextStep:
       "Der nächste sinnvolle Schritt ist, die ersten Use Cases gemeinsam zu benennen und ihre Hauptabläufe zu schärfen.",
-    children: useCases.map((useCase) => ({
-      id: useCase.id,
-      label: useCase.label,
-      meta: useCase.actor,
-    })),
+    children: useCaseTree,
   },
   {
     id: "data-modeling",
-    label: "Datenmodellierung",
+    label: "Modellierung",
     meta: "Tabellenstruktur",
     eyebrow: "Analyse",
-    title: "Datenmodellierung und Tabellenstruktur",
+    title: "Modellierung der Datenbankstruktur",
     lead:
-      "Dieser Bereich nimmt das fachliche Modell auf und übersetzt es schrittweise in Tabellen, Relationen und spätere Diagramme.",
-    chips: ["Tabellen", "Relationen", "Mermaid"],
-    focusTitle: "Vom Use Case zur Tabelle",
-    focusText:
-      "Die Datenmodellierung soll sichtbar machen, welche Entitäten für den MVP wirklich gebraucht werden und wie Projekte, Aktivitäten, Sessions und Auswertungen zusammenhängen.",
-    focusPoints: [
-      "Kernentitäten und Attribute aus den Use Cases ableiten",
-      "Tabellenstruktur als Klassendiagramm oder ER-Diagramm ablegen",
-      "Datenmodell später mit API und Dashboard verbinden",
+      "Hier wird aus den Use Cases schrittweise ein Datenmodell abgeleitet. Der Einstieg ist ein Klassendiagramm für ChatGPT-Projekte, zugeordnete Git-Repositories und daraus berechnete Metrikdaten.",
+    chips: ["Klassendiagramm", "Stammdaten", "Metriken"],
+    modelClasses: [
+      {
+        id: "model-project",
+        name: "chat_gpt_project",
+        attributes: ["projectId", "name", "description", "status"],
+      },
+      {
+        id: "model-repository",
+        name: "git_repository",
+        attributes: [
+          "repositoryId",
+          "projectId",
+          "path",
+          "remoteUrl",
+          "firstCheckInDate",
+          "lastCheckInDate",
+          "checkInCount",
+        ],
+      },
+      {
+        id: "model-metrics",
+        name: "check_in_metric",
+        attributes: [
+          "checkInMetricId",
+          "repositoryId",
+          "commitHash",
+          "commitDate",
+          "messageSubject",
+          "changedFileCount",
+          "addedLineCount",
+          "deletedLineCount",
+          "netLineChange",
+          "churnLineCount",
+          "trackedFileCount",
+          "isMergeCommit",
+        ],
+      },
     ],
-    nextStep:
-      "Nach der Use-Case-Schärfung kann hier ein erstes Mermaid-Diagramm für Project, WorkSession und ActivityEvent entstehen.",
+    modelRelations: [
+      "git_repository.projectId verweist auf chat_gpt_project.projectId.",
+      "check_in_metric.repositoryId verweist auf git_repository.repositoryId.",
+    ],
+    contentSections: [
+      {
+        title: "Tabellenbeschreibung",
+        paragraphs: [
+          "Die Tabellenbeschreibung hält die semantische Bedeutung der Tabellen fest und beschreibt die Foreign-Key-Beziehungen, an denen sich das relationale Modell orientiert.",
+        ],
+        subsections: [
+          {
+            title: "chat_gpt_project",
+            paragraphs: [
+              "chat_gpt_project enthält die Stammdaten eines verwalteten ChatGPT-Projekts. Ein Projekt beschreibt eine fachliche oder technische Arbeitseinheit, die in der Anwendung verwaltet und später im Dashboard ausgewertet werden soll.",
+              "Die Tabelle ist der fachliche Einstiegspunkt des Modells. Sie besitzt in diesem Stand keine Foreign Keys zu anderen Tabellen.",
+            ],
+          },
+          {
+            title: "git_repository",
+            paragraphs: [
+              "git_repository beschreibt ein Git-Repository, das einem ChatGPT-Projekt zugeordnet ist. Ein Projekt kann ein oder mehrere Repositories besitzen, weil technische Artefakte und Git-Historie nicht zwingend in genau einem Repository liegen müssen.",
+              "Die Foreign-Key-Beziehung `git_repository.projectId` verweist auf `chat_gpt_project.projectId`. Dadurch wird jedes Repository einem verwalteten ChatGPT-Projekt zugeordnet.",
+              "Repository-weite Kennzahlen wie `firstCheckInDate`, `lastCheckInDate` und `checkInCount` werden direkt bei git_repository geführt. Sie beschreiben verdichtete Historienmerkmale des Repositories und müssen nicht als einzelne Check-in-Metriken modelliert werden.",
+            ],
+          },
+          {
+            title: "check_in_metric",
+            paragraphs: [
+              "check_in_metric enthält einzelne aus Git gelesene oder abgeleitete Check-in-Metriken. Diese Daten werden nicht manuell gepflegt, sondern durch die Analyse der zugeordneten Git-Repositories und ihrer Check-ins ermittelt.",
+              "Die Foreign-Key-Beziehung `check_in_metric.repositoryId` verweist auf `git_repository.repositoryId`. Dadurch gehört jede Check-in-Metrik eindeutig zu dem Repository, aus dem der Check-in gelesen wurde.",
+              "`trackedFileCount` wird als Check-in-Metrik geführt, weil damit pro Check-in festgehalten wird, wie viele von Git verwaltete Dateien zu diesem Zeitpunkt existierten. Der aktuelle Wert für ein Repository kann später über den letzten Check-in ermittelt werden.",
+              "Tägliche oder wöchentliche Aggregationen werden nicht als eigene Tabellen modelliert. Sie können bei der Präsentation aus `check_in_metric.commitDate` per SQL `GROUP BY` oder alternativ in Python gruppiert und berechnet werden.",
+            ],
+          },
+        ],
+      },
+      {
+        title: "SQL Datenbankbeschreibung",
+        paragraphs: [
+          "Die folgenden SQL-Statements beschreiben den aktuellen operativen Stand des Datenmodells für MySQL. Die Tabellen werden in Foreign-Key-Reihenfolge angelegt: zuerst das Projekt, danach das Repository und zuletzt die Check-in-Metrik.",
+        ],
+        code: `CREATE TABLE chat_gpt_project (
+  projectId BIGINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  description TEXT NULL,
+  status VARCHAR(64) NOT NULL,
+  PRIMARY KEY (projectId)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE git_repository (
+  repositoryId BIGINT NOT NULL AUTO_INCREMENT,
+  projectId BIGINT NOT NULL,
+  path VARCHAR(1024) NOT NULL,
+  remoteUrl VARCHAR(1024) NULL,
+  firstCheckInDate DATETIME NULL,
+  lastCheckInDate DATETIME NULL,
+  checkInCount INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (repositoryId),
+  CONSTRAINT fk_git_repository_project
+    FOREIGN KEY (projectId)
+    REFERENCES chat_gpt_project (projectId)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE check_in_metric (
+  checkInMetricId BIGINT NOT NULL AUTO_INCREMENT,
+  repositoryId BIGINT NOT NULL,
+  commitHash VARCHAR(64) NOT NULL,
+  commitDate DATETIME NOT NULL,
+  messageSubject VARCHAR(512) NULL,
+  changedFileCount INT NOT NULL DEFAULT 0,
+  addedLineCount INT NOT NULL DEFAULT 0,
+  deletedLineCount INT NOT NULL DEFAULT 0,
+  netLineChange INT NOT NULL DEFAULT 0,
+  churnLineCount INT NOT NULL DEFAULT 0,
+  trackedFileCount INT NOT NULL DEFAULT 0,
+  isMergeCommit BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (checkInMetricId),
+  UNIQUE KEY uq_check_in_metric_repository_commit (repositoryId, commitHash),
+  KEY idx_check_in_metric_repository_date (repositoryId, commitDate),
+  CONSTRAINT fk_check_in_metric_repository
+    FOREIGN KEY (repositoryId)
+    REFERENCES git_repository (repositoryId)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`,
+      },
+    ],
   },
   ...useCases.map((useCase) => ({
     id: useCase.id,
@@ -178,10 +370,11 @@ export const sections = [
     eyebrow: "Use Case",
     title: useCase.label,
     lead: useCase.goal,
-    chips: [useCase.actor, "Ablauf", "Dokumentation"],
+    chips: useCase.chips ?? [useCase.actor, "Ablauf", "Dokumentation"],
     focusTitle: "Kurzbeschreibung",
     focusText: useCase.summary,
     focusPoints: useCase.steps,
+    contentSections: useCase.contentSections,
     nextStep:
       "Diesen Use Case können wir als nächstes mit Vorbedingungen, Hauptablauf, Varianten und betroffenen Tabellen ausformulieren.",
   })),

@@ -12,7 +12,7 @@
       <h1>{{ activeItem.title }}</h1>
       <p class="hero-card__lead">{{ activeItem.lead }}</p>
 
-      <div class="hero-card__chips">
+      <div v-if="activeItem.chips?.length" class="hero-card__chips">
         <span v-for="chip in activeItem.chips" :key="chip" class="hero-card__chip">{{ chip }}</span>
       </div>
     </section>
@@ -48,17 +48,71 @@
           </defs>
           <path class="use-case-map__relation" d="M 50 24 L 25 43" />
           <path class="use-case-map__relation" d="M 50 24 L 75 43" />
-          <path class="use-case-map__relation" d="M 75 62 L 62 82" />
+          <path class="use-case-map__relation" d="M 25 62 L 13 82" />
+          <path class="use-case-map__relation" d="M 25 62 L 37 82" />
+          <path class="use-case-map__relation" d="M 75 62 L 63 82" />
           <path class="use-case-map__relation" d="M 75 62 L 88 82" />
           <text class="use-case-map__relation-label" x="32" y="34">&lt;&lt;include&gt;&gt;</text>
           <text class="use-case-map__relation-label" x="57" y="34">&lt;&lt;include&gt;&gt;</text>
-          <text class="use-case-map__relation-label" x="58" y="74">&lt;&lt;include&gt;&gt;</text>
+          <text class="use-case-map__relation-label" x="8" y="74">&lt;&lt;include&gt;&gt;</text>
+          <text class="use-case-map__relation-label" x="28" y="74">&lt;&lt;include&gt;&gt;</text>
+          <text class="use-case-map__relation-label" x="57" y="74">&lt;&lt;include&gt;&gt;</text>
           <text class="use-case-map__relation-label" x="78" y="74">&lt;&lt;include&gt;&gt;</text>
         </svg>
       </div>
     </section>
 
-    <section class="detail-grid">
+    <section
+      v-if="activeItem.modelClasses"
+      class="model-diagram"
+      aria-label="Klassendiagramm der Datenbankstruktur"
+    >
+      <div class="model-diagram__canvas">
+        <article
+          v-for="modelClass in activeItem.modelClasses"
+          :key="modelClass.id"
+          class="model-class"
+          :class="`model-class--${modelClass.id}`"
+        >
+          <h2>{{ modelClass.name }}</h2>
+          <ul>
+            <li v-for="attribute in modelClass.attributes" :key="attribute">{{ attribute }}</li>
+          </ul>
+        </article>
+
+        <div class="model-diagram__connector model-diagram__connector--project">
+          <span>projectId</span>
+        </div>
+        <div class="model-diagram__connector model-diagram__connector--repository">
+          <span>repositoryId</span>
+        </div>
+      </div>
+    </section>
+
+    <section v-if="activeItem.contentSections" class="content-sections">
+      <article
+        v-for="contentSection in activeItem.contentSections"
+        :key="contentSection.title"
+        class="content-section"
+      >
+        <h2>{{ contentSection.title }}</h2>
+        <p v-for="paragraph in contentSection.paragraphs" :key="paragraph">{{ paragraph }}</p>
+        <div v-if="contentSection.subsections?.length" class="content-section__subsections">
+          <article
+            v-for="subsection in contentSection.subsections"
+            :key="subsection.title"
+            class="content-subsection"
+        >
+          <h3>{{ subsection.title }}</h3>
+          <p v-for="paragraph in subsection.paragraphs" :key="paragraph">{{ paragraph }}</p>
+          <pre v-if="subsection.code" class="content-code"><code>{{ subsection.code }}</code></pre>
+        </article>
+      </div>
+      <pre v-if="contentSection.code" class="content-code"><code>{{ contentSection.code }}</code></pre>
+    </article>
+  </section>
+
+    <section v-else class="detail-grid">
       <article class="detail-card detail-card--primary">
         <p class="detail-card__label">Rolle im Projekt</p>
         <h2>{{ activeItem.focusTitle }}</h2>

@@ -43,7 +43,7 @@ Die linke Navigation bleibt dadurch sehr schlank. Weitere fachliche Tiefe soll i
 Der Bereich `Analyse` ist als dokumentierender Arbeitsraum aufgebaut und enthält zwei erste Unterpunkte:
 
 - `Use Cases`: klappbarer Tree-Knoten mit grafischer Use-Case-Sicht und darunterliegenden Dokumentationsseiten je Use Case
-- `Datenmodellierung`: Bereich für Tabellenstruktur, Relationen und spätere Mermaid- oder UML-Diagramme
+- `Modellierung`: Bereich für Tabellenstruktur, Relationen und spätere Mermaid- oder UML-Diagramme
 
 Ein Klick auf eine Use-Case-Bubble führt in den passenden Dokumentationsknoten im Navigationsbaum. Damit kann die fachliche Diskussion interaktiv beginnen und schrittweise in versionierte Dokumentation überführt werden.
 
@@ -52,5 +52,7 @@ Die erste Use-Case-Struktur ist hierarchisch gedacht:
 - `Dashboard nutzen` ist der Haupt-Use-Case
 - `Dashboard nutzen` inkludiert `Projekte pflegen`
 - `Dashboard nutzen` inkludiert `Projektdaten präsentieren`
+- `Projekte pflegen` inkludiert `Neue Projekte anlegen`
+- `Projekte pflegen` inkludiert `Git-Daten analysieren`
 - `Projektdaten präsentieren` inkludiert `Präsentation in Tabellenform`
 - `Projektdaten präsentieren` inkludiert `Präsentation in grafischer Form`

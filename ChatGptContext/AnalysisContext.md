@@ -84,6 +84,18 @@ Moegliche Git-nahe Metriken sind unter anderem:
 
 Die Kombination beider Spuren ist fachlich zentral: Der Antwortkontext beschreibt den sichtbaren KI-Arbeitsprozess, Git beschreibt die resultierenden Code- und Artefaktaenderungen. Erst gemeinsam koennen beide Spuren produktivitaetsbezogene Aussagen stuetzen.
 
+## Aktueller Fokus der Git-Metriken
+
+Für den ersten Datenbankentwurf werden Git-Daten entlang einzelner Check-ins gedacht. Die Tabelle `check_in_metric` soll aus Git gelesene oder abgeleitete Einzelmetriken aufnehmen.
+
+Ein generisches `metricPayload` wird zunächst bewusst nicht modelliert. Stattdessen werden nur stabile Kernmetriken als explizite Attribute vorgesehen. Weitere Details aus Git sollen erst ergänzt werden, wenn konkrete Auswertungsfragen entstehen.
+
+`trackedFileCount` wird als Check-in-Metrik geführt. Dadurch wird pro Check-in historisiert, wie viele von Git verwaltete Dateien zu diesem Zeitpunkt existierten. Der aktuelle Wert eines Repositories kann später über den jeweils letzten Check-in ermittelt werden.
+
+Repository-weite Kennzahlen wie `firstCheckInDate`, `lastCheckInDate` und `checkInCount` werden direkt auf `git_repository` geführt. Diese Werte beschreiben verdichtete Historienmerkmale des Repositories.
+
+Aggregationen wie tägliche oder wöchentliche Auswertungen sollen zunächst nicht als fertig berechnete Werte gespeichert und auch nicht als eigene Mapping-Struktur modelliert werden. Sie werden aus `check_in_metric.commitDate` per SQL `GROUP BY` oder alternativ in Python gruppiert und berechnet.
+
 ## Komprimiertes Chat-Protokoll
 
 Eine weitere zentrale Idee ist ein komprimiertes Chat-Protokoll. Es soll nicht zwingend den gesamten Chat in voller Laenge speichern, sondern die fachlich relevanten Bezugspunkte zwischen menschlicher Anforderung, KI-Antwort und Entwicklungsartefakten erhalten.
