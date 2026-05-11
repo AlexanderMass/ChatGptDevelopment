@@ -37,6 +37,15 @@ Geplante physische Tabellen:
 - `git_repository`: einem Projekt zugeordnetes Git-Repository
 - `check_in_metric`: aus Git-Check-ins abgeleitete Einzelmetriken
 
+Wichtige Attribute von `chat_gpt_project`:
+
+- `projectId`
+- `name`
+- `description`
+- `status`
+- `startDate`
+- `endDate`
+
 Wichtige Foreign-Key-Beziehungen:
 
 - `git_repository.projectId` verweist auf `chat_gpt_project.projectId`

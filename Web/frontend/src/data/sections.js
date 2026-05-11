@@ -24,7 +24,10 @@ export const useCases = [
       {
         title: "Oberflächendesign",
         paragraphs: [
-          "Das Dashboard wird als einzelne Arbeitsfläche mit zwei fachlichen Haupt-Panels gedacht. Das obere Panel dient der Projektpflege, das untere Panel der Projektdatenpräsentation. Beide Teilpanels nehmen die gesamte Breite der Applikation ein. Der obere Projektbereich nimmt etwa 25 Prozent der Höhe ein, der untere Präsentationsbereich etwa 75 Prozent. Damit bildet die Oberfläche die Include-Struktur des Use-Case-Modells direkt ab.",
+          {
+            text: "Das Oberflächendesign des Dashboards ist im Designobjekt Dashboard beschrieben.",
+            linkTarget: "design-surfaces-dashboard",
+          },
         ],
       },
     ],
@@ -41,7 +44,7 @@ export const useCases = [
       "Bestehende Projektinformationen aktualisieren",
       "Git-Daten für verwaltete Projekte einlesen",
     ],
-    includes: ["uc-create-project", "uc-analyze-git-data"],
+    includes: ["uc-create-project", "uc-administer-projects", "uc-analyze-git-data"],
     chips: [],
     contentSections: [
       {
@@ -49,20 +52,17 @@ export const useCases = [
         paragraphs: [
           "Der Use Case Projekte pflegen beschreibt den operativen Umgang mit den in der Datenbank verwalteten ChatGPT-Projekten. Der Nutzer soll sehen können, welche Projekte bereits angelegt sind und welche Repository-Informationen ihnen zugeordnet wurden.",
           "Zu jedem Projekt werden die gespeicherten Projektinformationen aus der Datenbank angezeigt. Dazu gehören auch verdichtete beziehungsweise aggregierte Metrikinformationen, die aus den zugeordneten Git-Repositories und Check-in-Metriken abgeleitet werden.",
-          "Die Applikation bietet in diesem Bereich zwei operative Funktionen an: neue Projekte anlegen und Git-Daten analysieren. Diese Funktionen sprechen die jeweils referenzierten Use Cases an; ihre Detailbeschreibung erfolgt dort.",
-          "Der Use Case bildet damit die fachliche Klammer für zwei untergeordnete Aufgaben: neue Projekte anlegen und Git-Daten analysieren. Die Detailregeln dieser Aufgaben werden in den inkludierten Use Cases weiter beschrieben.",
+          "Die Applikation bietet in diesem Bereich operative Funktionen für neue Projekte anlegen, Projekte administrieren und Git-Daten analysieren an. Diese Funktionen sprechen die jeweils referenzierten Use Cases an; ihre Detailbeschreibung erfolgt dort.",
+          "Der Use Case bildet damit die fachliche Klammer für drei untergeordnete Aufgaben: neue Projekte anlegen, Projekte administrieren und Git-Daten analysieren. Die Detailregeln dieser Aufgaben werden in den inkludierten Use Cases weiter beschrieben.",
         ],
       },
       {
         title: "Oberflächendesign",
         paragraphs: [
-          "Die Oberfläche wird als Projektpflege-Panel innerhalb des Dashboards gedacht. Auf diesem Panel werden drei Elemente platziert: eine Tabelle mit den Projektdaten sowie zwei Buttons für die operativen Funktionen.",
-          "Die Projekttabelle zeigt die Spalten Projektname, Status, Repository-Anzahl, erster Check-in, letzter Check-in, Check-in-Anzahl und getrackte Dateien. Die Sortierung erfolgt amerikanisch beziehungsweise zeitlich absteigend: Das Projekt mit dem neuesten letzten Check-in steht ganz oben, die weiteren Projekte folgen entsprechend absteigend. Der Status beschreibt den Bearbeitungs- beziehungsweise Beobachtungsstatus des Projekts, zum Beispiel aktiv, pausiert oder archiviert.",
-          "Wenn der Nutzer mit der Maus auf eine Projektzeile geht, öffnet sich ein Tooltip mit einer kompakten Repository-Tabelle. Diese Tooltip-Tabelle zeigt die zugeordneten Repositories und deren aggregierte Daten, sodass die 1:n-Beziehung zwischen Projekt und Repositories sichtbar wird, ohne die Haupttabelle zu überladen.",
-          "Das Panel ist horizontal unterteilt. Links steht die Projekttabelle; rechts befindet sich eine schmale Aktionsspalte mit zwei übereinander angeordneten Buttons. Der obere Button stellt die Funktion zur Neuanlage von Projekten bereit, der untere Button startet die Analyse der Git-Daten.",
-          "Die beiden Buttons sind gleich groß und nur etwas größer als ihre textuelle Beschreibung. Die Projekttabelle nimmt den gesamten restlichen verfügbaren Raum in der Breite ein. Dadurch bleiben Projektübersicht und operative Pflegefunktionen in einem gemeinsamen Arbeitsbereich gebündelt.",
-          "Wenn der Nutzer auf den Button Neue Projekte anlegen drückt, öffnet sich ein Pop-up-Window mit der entsprechenden Erfassungsfunktion. Die fachliche Detailbeschreibung erfolgt im Use Case Neue Projekte anlegen.",
-          "Wenn der Nutzer auf den Button Git-Daten analysieren drückt, startet eine Python-Funktion. Diese analysiert die zugeordneten Git-Repositories, ermittelt die relevanten Git- und Metrikdaten und legt die Ergebnisse in der Datenbank ab. Die fachliche Detailbeschreibung erfolgt im Use Case Git-Daten analysieren.",
+          {
+            text: "Das Oberflächendesign ist im Designobjekt Projektpflege-Panel beschrieben.",
+            linkTarget: "design-surfaces-project-maintenance-panel",
+          },
         ],
       },
     ],
@@ -85,7 +85,7 @@ export const useCases = [
         title: "Funktion",
         paragraphs: [
           "Der Use Case Neue Projekte anlegen beschreibt die Erfassung eines neuen ChatGPT-Projekts als verwaltbares Analyseobjekt.",
-          "Der Nutzer kann einen Projektnamen eingeben und separat eine Projektbeschreibung erfassen.",
+          "Der Nutzer kann einen Projektnamen eingeben und separat eine Projektbeschreibung erfassen. Neben dem Namen wird das Startdatum des Projekts gesetzt. Das Startdatum ist mit dem aktuellen Datum vorbelegt und kann vom Nutzer in die Vergangenheit verlegt werden; eine Administration in die Zukunft ist fachlich nicht sinnvoll.",
           "Das System liest aus dem Repository-Bereich eine Liste verfügbarer Git-Repositories aus und stellt sie zur Auswahl bereit. Dadurch können ein oder mehrere Repositories dem neu angelegten Projekt zugeordnet werden.",
           "Drückt der Nutzer auf den Button Projekt anlegen, werden die administrierten Daten in der Datenbank gespeichert. Dazu gehören die Projektdaten sowie die Relation zwischen dem neuen Projekt und den ausgewählten Repositories.",
           "Drückt der Nutzer auf den Button Abbrechen, wird der Pop-up-Dialog geschlossen, ohne ein neues Projekt zu speichern.",
@@ -104,10 +104,47 @@ export const useCases = [
       {
         title: "Oberflächendesign",
         paragraphs: [
-          "Die Oberfläche wird als Pop-up-Window gedacht, das aus dem Projektpflege-Panel heraus geöffnet wird. Das Dialogfenster besitzt rechts oben den üblichen Schließen-Button X.",
-          "Im oberen Sub-Panel werden die Projektdaten erfasst. Links steht ein einzeiliges Textfeld für den Projektnamen. Rechts daneben wird eine mehrzeilige Textarea für die Projektbeschreibung angeboten.",
-          "Darunter befindet sich ein zweites Sub-Panel für die Repository-Zuordnung. Die Auswahl wird als Zwei-Listen-Mechanik umgesetzt: links verfügbare Repositories, rechts dem Projekt zugeordnete Repositories. Über Hinzufügen und Entfernen können Repositories zwischen beiden Listen bewegt werden.",
-          "Am unteren Rand des Pop-up-Windows stehen die beiden Dialogaktionen Projekt anlegen und Abbrechen.",
+          {
+            text: "Das Oberflächendesign ist im Designobjekt Projektdialog beschrieben.",
+            linkTarget: "design-surfaces-project-dialog",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "uc-administer-projects",
+    label: "Projekte administrieren",
+    actor: "Anwender",
+    goal: "Bestehende Projektstammdaten und Projektzuordnungen bearbeiten.",
+    summary:
+      "Der Anwender administriert bereits angelegte Projekte. Dazu gehören die Pflege der Projektdaten und die spätere Anpassung zugeordneter Repositories.",
+    steps: [
+      "Bestehendes Projekt auswählen",
+      "Projektstammdaten bearbeiten",
+      "Repository-Zuordnungen prüfen oder ändern",
+    ],
+    chips: [],
+    contentSections: [
+      {
+        title: "Funktion",
+        paragraphs: [
+          "Der Use Case Projekte administrieren beschreibt die Bearbeitung bereits angelegter ChatGPT-Projekte. Fachlich nutzt er denselben Projekt-Dialog wie der Use Case Neue Projekte anlegen, wird aber mit einer anderen Oberflächenkonfiguration geöffnet.",
+          "Der Projektname kann in dieser Konfiguration nicht administriert werden. Auch das Startdatum des Projekts ist nicht administrierbar, weil es den fachlichen Beginn des Projekts beschreibt und beim Anlegen festgelegt wurde.",
+          "Das Projektende kann administriert werden. Es wird initial aus der Datenbank geladen; ist dort kein Wert gespeichert, bleibt das Feld leer. Trägt der Nutzer ein Projektende ein oder ändert den bestehenden Wert, wird diese Änderung beim Beenden des Dialogs in der Datenbank gespeichert.",
+          "Auch die dem Projekt zugewiesenen Repositories können administriert werden. Der Nutzer kann neue Repositories aufnehmen oder bereits im Projekt vermerkte Repositories entfernen.",
+          "Drückt der Nutzer zum Abschluss des Dialogs auf OK, werden die geänderten Daten gespeichert. Stellt das System dabei fest, dass ein oder mehrere Repositories entfernt wurden, erscheint zuvor eine Warnung. Diese Warnung weist darauf hin, dass Repository-Zuordnungen gelöscht wurden und dass dadurch die entsprechenden Verweise auf der Datenbank entfernt würden.",
+          "Bestätigt der Nutzer die Warnung nicht, bleibt der Projekt-Dialog geöffnet. Der Nutzer kann die Repository-Administration korrigieren und anschließend erneut versuchen, den Dialog mit OK zu beenden.",
+          "Bestätigt der Nutzer die Warnung, werden die entfernten Git-Repositories in der Datenbank gelöscht. Da an einem Git-Repository optional Check-in-Metriken hängen, müssen algorithmisch zuerst alle zugehörigen Datensätze aus `check_in_metric` entfernt werden. Erst danach wird die betroffene Instanz aus `git_repository` gelöscht.",
+        ],
+      },
+      {
+        title: "Oberflächendesign",
+        paragraphs: [
+          {
+            text: "Das Oberflächendesign ist im Designobjekt Projektdialog beschrieben.",
+            linkTarget: "design-surfaces-project-dialog",
+          },
         ],
       },
     ],
@@ -165,6 +202,25 @@ export const useCases = [
       "Daten als Tabelle oder Grafik auswerten",
     ],
     includes: ["uc-present-table", "uc-present-graph"],
+    chips: [],
+    contentSections: [
+      {
+        title: "Funktionen",
+        paragraphs: [
+          "Der Use Case Projektdaten präsentieren beschreibt die Darstellung der erfassten Projekt- und Metrikdaten.",
+          "Es wird zwei Formen der Darstellung geben. Die projektbezogene Darstellung zeigt insbesondere die Git-Commits eines Projekts in Tabellenform. Daneben wird es verschiedene grafische Darstellungen geben, die entweder projektbezogen oder über alle Projekte aggregiert aufgebaut sein können.",
+        ],
+      },
+      {
+        title: "Oberflächenbeschreibung",
+        paragraphs: [
+          {
+            text: "Die Oberflächenbeschreibung ist im Designobjekt Projektpräsentations-Panel, Paneel 1: Tabellendarstellung von Projekten, beschrieben.",
+            linkTarget: "paneel-tabellendarstellung-projekte",
+          },
+        ],
+      },
+    ],
   },
   {
     id: "uc-present-table",
@@ -178,6 +234,25 @@ export const useCases = [
       "Relevante Spalten und Projektdaten anzeigen",
       "Daten vergleichen, sortieren oder filtern",
     ],
+    chips: [],
+    contentSections: [
+      {
+        title: "Funktion",
+        paragraphs: [
+          "Der Use Case Präsentation in Tabellenform beschreibt die projektbezogene Darstellung von Git-Commits in einer Tabelle.",
+          "Die Tabelle soll die erfassten Check-in-Metriken so anzeigen, dass der Nutzer die Entwicklung eines Projekts nachvollziehen und einzelne Commits fachlich prüfen kann.",
+        ],
+      },
+      {
+        title: "Oberflächenbeschreibung",
+        paragraphs: [
+          {
+            text: "Die Oberflächenbeschreibung ist im Designobjekt Projektpräsentations-Panel, Paneel 2: Graphenbasierte Darstellung, beschrieben.",
+            linkTarget: "paneel-graphenbasierte-darstellung-projekte",
+          },
+        ],
+      },
+    ],
   },
   {
     id: "uc-present-graph",
@@ -190,6 +265,69 @@ export const useCases = [
       "Grafische Ansicht öffnen",
       "Diagrammtyp oder Auswertungsfokus wählen",
       "Verlauf, Verteilung oder Vergleich visuell auswerten",
+    ],
+    chips: [],
+    contentSections: [
+      {
+        title: "Funktion",
+        paragraphs: [
+          "Der Use Case Präsentation in grafischer Form beschreibt die graphenbasierte Auswertung der erfassten Projekt- und Metrikdaten.",
+          "Es können mehrere Grafiktypen angeboten werden. Einige Grafiktypen benötigen ein konkretes Projekt, andere können projektübergreifend oder über alle Projekte aggregiert dargestellt werden.",
+          "Die X-Achse ist in der Regel eine Zeitachse. Die Y-Achse wird durch die jeweils dargestellte Metrik bestimmt.",
+        ],
+        table: {
+          columns: ["Grafiktyp", "Projekt erforderlich", "Beschreibung"],
+          rows: [
+            [
+              "Check-in-Count innerhalb eines Projekts",
+              "Ja",
+              "Stellt dar, wie sich die Anzahl der Check-ins eines Projekts über die Zeit entwickelt.",
+            ],
+            [
+              "Anzahl der Files innerhalb eines Projekts",
+              "Ja",
+              "Stellt dar, wie sich die Anzahl der innerhalb eines Projekts verwalteten Files über die Zeit entwickelt.",
+            ],
+            [
+              "Anzahl der Lines of Code",
+              "Ja",
+              "Stellt dar, wie sich die Anzahl der Lines of Code innerhalb eines Projekts über die Zeit entwickelt.",
+            ],
+          ],
+        },
+        subsections: [
+          {
+            id: "algorithmus-grafiktyp-check-in-count",
+            title: "Algorithmus Grafiktyp 1: Check-in-Count innerhalb eines Projekts",
+            paragraphs: [
+              "Die algorithmische Ermittlung dieses Grafiktyps wird im weiteren Designverlauf beschrieben.",
+            ],
+          },
+          {
+            id: "algorithmus-grafiktyp-file-count",
+            title: "Algorithmus Grafiktyp 2: Anzahl der Files innerhalb eines Projekts",
+            paragraphs: [
+              "Die algorithmische Ermittlung dieses Grafiktyps wird im weiteren Designverlauf beschrieben.",
+            ],
+          },
+          {
+            id: "algorithmus-grafiktyp-lines-of-code",
+            title: "Algorithmus Grafiktyp 3: Anzahl der Lines of Code",
+            paragraphs: [
+              "Die algorithmische Ermittlung dieses Grafiktyps wird im weiteren Designverlauf beschrieben.",
+            ],
+          },
+        ],
+      },
+      {
+        title: "Oberflächenbeschreibung",
+        paragraphs: [
+          {
+            text: "Die Oberflächenbeschreibung ist im Designobjekt Projektpräsentations-Panel, Paneel 2: Graphenbasierte Darstellung, beschrieben.",
+            linkTarget: "paneel-graphenbasierte-darstellung-projekte",
+          },
+        ],
+      },
     ],
   },
 ];
@@ -206,6 +344,10 @@ export const useCaseTree = [
           {
             id: "uc-create-project",
             label: "Neue Projekte anlegen",
+          },
+          {
+            id: "uc-administer-projects",
+            label: "Projekte administrieren",
           },
           {
             id: "uc-analyze-git-data",
@@ -228,6 +370,25 @@ export const useCaseTree = [
         ],
       },
     ],
+  },
+];
+
+export const surfaceTree = [
+  {
+    id: "design-surfaces-dashboard",
+    label: "Dashboard",
+  },
+  {
+    id: "design-surfaces-project-maintenance-panel",
+    label: "Projektpflege-Panel",
+  },
+  {
+    id: "design-surfaces-project-presentation-panel",
+    label: "Projektpräsentations-Panel",
+  },
+  {
+    id: "design-surfaces-project-dialog",
+    label: "Projekt-Dialog",
   },
 ];
 
@@ -279,6 +440,18 @@ export const sections = [
         children: useCaseTree,
       },
       {
+        id: "design",
+        label: "Design",
+        meta: "Oberflächen",
+        children: [
+          {
+            id: "design-surfaces",
+            label: "Oberflächen",
+            children: surfaceTree,
+          },
+        ],
+      },
+      {
         id: "data-modeling",
         label: "Modellierung",
         meta: "Tabellenstruktur",
@@ -296,15 +469,208 @@ export const sections = [
     chips: ["Akteure", "Use Cases", "Dokumentation"],
     focusTitle: "Interaktive Modellierung",
     focusText:
-      "Die Use-Case-Seite verbindet eine grafische Übersicht mit Detailseiten. Der Haupt-Use-Case Dashboard nutzen inkludiert Projektpflege und Präsentation. Projektpflege teilt sich in Projektanlage und Git-Datenanalyse auf, Präsentation in Tabellen- und Grafikform.",
+      "Die Use-Case-Seite verbindet eine grafische Übersicht mit Detailseiten. Der Haupt-Use-Case Dashboard nutzen inkludiert Projektpflege und Präsentation. Projektpflege teilt sich in Projektanlage, Projektadministration und Git-Datenanalyse auf, Präsentation in Tabellen- und Grafikform.",
     focusPoints: [
       "Use Cases gemeinsam fachlich schneiden",
       "Akteure, Ziele und Hauptabläufe dokumentieren",
       "Später daraus Datenmodell und API-Aufgaben ableiten",
     ],
+    contentSections: [],
     nextStep:
       "Der nächste sinnvolle Schritt ist, die ersten Use Cases gemeinsam zu benennen und ihre Hauptabläufe zu schärfen.",
     children: useCaseTree,
+  },
+  {
+    id: "design",
+    label: "Design",
+    meta: "Oberflächen",
+    eyebrow: "Analyse",
+    title: "Design",
+    lead:
+      "Der Designbereich sammelt wiederverwendbare Beschreibungen von Oberflächenobjekten, die nicht dauerhaft in einzelnen Use Cases dupliziert werden sollen.",
+    chips: ["Oberflächen", "Kapselung", "Reuse"],
+    focusTitle: "Kapselnde Sicht",
+    focusText:
+      "Designobjekte werden dann herausfaktorisiert, wenn sie wiederverwendet werden, mehrere Use Cases berühren oder als eigenständige Oberfläche klar benannt werden sollen.",
+    focusPoints: [
+      "Oberflächenobjekte aus Use Cases herauslösen",
+      "Dopplungen in Use-Case-Beschreibungen vermeiden",
+      "Wiederverwendbare UI-Strukturen zentral dokumentieren",
+    ],
+    nextStep:
+      "Der aktuelle Schwerpunkt liegt auf den Oberflächenobjekten Dashboard, Projektpflege-Panel, Projektpräsentations-Panel und Projekt-Dialog.",
+    children: [
+      {
+        id: "design-surfaces",
+        label: "Oberflächen",
+        children: surfaceTree,
+      },
+    ],
+  },
+  {
+    id: "design-surfaces",
+    label: "Oberflächen",
+    meta: "Designobjekte",
+    eyebrow: "Design",
+    title: "Oberflächen",
+    lead:
+      "Diese Sicht bündelt die zentralen Oberflächenobjekte der Anwendung. Sie werden aus den Use Cases herausgelöst, wenn sie mehrere fachliche Funktionen tragen oder wiederverwendbar beschrieben werden sollen.",
+    chips: ["Dashboard", "Panels", "Dialog"],
+    focusTitle: "Oberflächenobjekte",
+    focusText:
+      "Die Oberflächenbeschreibungen dienen als Brücke zwischen fachlichen Use Cases und späterer Frontend-Implementierung.",
+    focusPoints: [
+      "Dashboard als Rahmenoberfläche",
+      "Projektpflege-Panel für Projektübersicht und Aktionen",
+      "Projektpräsentations-Panel für spätere Auswertungen",
+      "Projekt-Dialog für Neuanlage und Administration",
+    ],
+    nextStep:
+      "Die einzelnen Oberflächenobjekte können nun unabhängig von den Use Cases weiter detailliert werden.",
+    children: surfaceTree,
+  },
+  {
+    id: "design-surfaces-dashboard",
+    label: "Dashboard",
+    meta: "Oberfläche",
+    eyebrow: "Design",
+    title: "Dashboard",
+    lead:
+      "Das Dashboard ist die Rahmenoberfläche der Anwendung und nimmt die beiden zentralen Teilpanels auf.",
+    chips: [],
+    contentSections: [
+      {
+        title: "Oberflächenbeschreibung",
+        paragraphs: [
+          {
+            parts: [
+              {
+                text: "Das Dashboard wird als einzelne Arbeitsfläche mit zwei fachlichen Haupt-Panels gedacht. ",
+              },
+              {
+                text: "Das obere Panel dient der Projektpflege",
+                linkTarget: "design-surfaces-project-maintenance-panel",
+              },
+              {
+                text: ", ",
+              },
+              {
+                text: "das untere Panel dient der Projektdatenpräsentation",
+                linkTarget: "design-surfaces-project-presentation-panel",
+              },
+              {
+                text: ".",
+              },
+            ],
+          },
+          "Beide Teilpanels nehmen die gesamte Breite der Applikation ein. Der obere Projektbereich nimmt etwa 25 Prozent der Höhe ein, der untere Präsentationsbereich etwa 75 Prozent.",
+          "Damit bildet die Oberfläche die Include-Struktur des Use-Case-Modells direkt ab.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "design-surfaces-project-maintenance-panel",
+    label: "Projektpflege-Panel",
+    meta: "Oberfläche",
+    eyebrow: "Design",
+    title: "Projektpflege-Panel",
+    lead:
+      "Das Projektpflege-Panel ist der obere Arbeitsbereich des Dashboards und bündelt Projektübersicht und Projektaktionen.",
+    chips: [],
+    contentSections: [
+      {
+        title: "Oberflächenbeschreibung",
+        paragraphs: [
+          "Auf diesem Panel werden drei Elemente platziert: eine Tabelle mit den Projektdaten sowie zwei Buttons für die operativen Funktionen.",
+          "Die Projekttabelle zeigt die Spalten Projektname, Status, Repository-Anzahl, erster Check-in, letzter Check-in, Check-in-Anzahl und getrackte Dateien. Die Sortierung erfolgt amerikanisch beziehungsweise zeitlich absteigend: Das Projekt mit dem neuesten letzten Check-in steht ganz oben, die weiteren Projekte folgen entsprechend absteigend.",
+          "Der Status beschreibt den Bearbeitungs- beziehungsweise Beobachtungsstatus des Projekts, zum Beispiel aktiv, pausiert oder archiviert.",
+          "Wenn der Nutzer mit der Maus auf eine Projektzeile geht, öffnet sich ein Tooltip mit einer kompakten Repository-Tabelle. Diese Tooltip-Tabelle zeigt die zugeordneten Repositories und deren aggregierte Daten, sodass die 1:n-Beziehung zwischen Projekt und Repositories sichtbar wird, ohne die Haupttabelle zu überladen.",
+          "Das Panel ist horizontal unterteilt. Links steht die Projekttabelle; rechts befindet sich eine schmale Aktionsspalte mit zwei übereinander angeordneten Buttons. Der obere Button stellt die Funktion zur Neuanlage von Projekten bereit, der untere Button startet die Analyse der Git-Daten.",
+          "Die beiden Buttons sind gleich groß und nur etwas größer als ihre textuelle Beschreibung. Die Projekttabelle nimmt den gesamten restlichen verfügbaren Raum in der Breite ein.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "design-surfaces-project-presentation-panel",
+    label: "Projektpräsentations-Panel",
+    meta: "Oberfläche",
+    eyebrow: "Design",
+    title: "Projektpräsentations-Panel",
+    lead:
+      "Das Projektpräsentations-Panel ist der untere Arbeitsbereich des Dashboards und nimmt spätere Tabellen- und Grafikdarstellungen auf.",
+    chips: [],
+    contentSections: [
+      {
+        title: "Oberflächenbeschreibung",
+        paragraphs: [
+          "Das Projektpräsentations-Panel gehört fachlich zum Use Case Projektdaten präsentieren.",
+          "Es nimmt den unteren Bereich des Dashboards ein und ist für spätere tabellarische und grafische Präsentationen der Projektdaten vorgesehen.",
+          "Die genaue Ausgestaltung wird in den Use Cases Präsentation in Tabellenform und Präsentation in grafischer Form weiter differenziert.",
+          "Die Oberfläche wird als Tab Pane ausgeführt. Es gibt zwei aktivierbare Paneele: eines für die Tabellenansicht und eines für die grafische Ansicht.",
+        ],
+        subsections: [
+          {
+            id: "paneel-tabellendarstellung-projekte",
+            title: "Paneel 1: Tabellendarstellung von Projekten",
+            paragraphs: [
+              "Das erste Paneel enthält die tabellarische Darstellung von Projektdaten. Es dient insbesondere der projektbezogenen Anzeige von Git-Commits und den zugehörigen Check-in-Metriken.",
+              "Im oberen Bereich wird ein Projekt-Selector als Kombobox angeboten. Die Projekte werden in der Kombobox sortiert angezeigt; die zuletzt angelegten Projekte stehen an erster Stelle. Das zeitlich letzte Projekt ist vorausgewählt.",
+              "Im unteren Bereich befindet sich die Tabelle mit sämtlichen Check-in-Daten und den zugehörigen Metriken des vorausgewählten beziehungsweise aktuell selektierten Projekts. Die Tabelle füllt die restliche verfügbare Fläche des Paneels aus.",
+            ],
+          },
+          {
+            id: "paneel-graphenbasierte-darstellung-projekte",
+            title: "Paneel 2: Graphenbasierte Darstellung",
+            paragraphs: [
+              "Das zweite Paneel enthält zwei Bereiche: einen oberen Administrationsbereich und einen unteren Bereich für die Darstellung eines Graphen.",
+              "Der Administrationsbereich enthält zwei Komboboxen. In der ersten Kombobox wird der Graphentyp ausgewählt. Die zweite Kombobox dient der Projektauswahl und wird nur aktiviert, wenn der ausgewählte Graphentyp eine Projektspezifikation benötigt.",
+              "Wird eine Projektspezifikation benötigt, werden die Projekte zeitlich sortiert angezeigt. Die Default-Belegung ist das zeitlich zuletzt angelegte Projekt; maßgeblich ist dabei das Startdatum des Projekts.",
+              "Im unteren Bereich wird die Grafik dargestellt. Die X-Achse ist in der Regel zeitabhängig, während auf der Y-Achse die jeweilige Metrik angezeigt wird.",
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "design-surfaces-project-dialog",
+    label: "Projekt-Dialog",
+    meta: "Oberfläche",
+    eyebrow: "Design",
+    title: "Projekt-Dialog",
+    lead:
+      "Der Projekt-Dialog ist ein wiederverwendbarer Dialog für Projektneuanlage und spätere Projektadministration.",
+    chips: [],
+    contentSections: [
+      {
+        title: "Oberflächenbeschreibung",
+        paragraphs: [
+          "Die Oberfläche wird als Pop-up-Window gedacht, das aus dem Projektpflege-Panel heraus geöffnet wird. Das Dialogfenster besitzt rechts oben den üblichen Schließen-Button X.",
+          "Im oberen Sub-Panel werden die Projektdaten erfasst. Links steht eine kompakte Formulargruppe mit den Labels Name, Projektstart und Projektende; rechts neben den Labels liegen die zugehörigen Eingabefelder. Name ist ein einzeiliges Textfeld, Projektstart und Projektende sind Datumsfelder mit Datumsselektor. Rechts daneben wird eine mehrzeilige Textarea für die Projektbeschreibung angeboten.",
+          "Darunter befindet sich ein zweites Sub-Panel für die Repository-Zuordnung. Die Auswahl wird als Zwei-Listen-Mechanik umgesetzt: links verfügbare Repositories, rechts dem Projekt zugeordnete Repositories. Über Hinzufügen und Entfernen können Repositories zwischen beiden Listen bewegt werden.",
+          "Am unteren Rand des Pop-up-Windows stehen die beiden Dialogaktionen OK und Abbrechen.",
+        ],
+        subsections: [
+          {
+            id: "oberflaechenkonfiguration-neue-projekte-anlegen",
+            title: "Oberflächenkonfiguration Neue Projekte anlegen",
+            paragraphs: [
+              "Im Use Case Neue Projekte anlegen dient der Projekt-Dialog der initialen Erfassung eines neuen Projekts. Das Feld Name ist administrierbar. Projektstart ist ebenfalls administrierbar und wird mit dem aktuellen Datum vorbelegt. Projektende ist in dieser Konfiguration nicht administrierbar.",
+            ],
+          },
+          {
+            id: "oberflaechenkonfiguration-projekte-administrieren",
+            title: "Oberflächenkonfiguration Projekte administrieren",
+            paragraphs: [
+              "Im Use Case Projekte administrieren dient der Projekt-Dialog der Pflege eines bereits bestehenden Projekts. Der Name kann nicht geändert werden. Projektstart ist ebenfalls nicht administrierbar.",
+              "Projektende wird initial aus der Datenbank geladen. Ist der gespeicherte Wert null, bleibt das Feld zunächst ungesetzt. Entscheidet sich der Nutzer, ein Projektende einzutragen oder zu ändern, wird dieser Wert beim Beenden des Dialogs in der Datenbank gespeichert.",
+            ],
+          },
+        ],
+      },
+    ],
   },
   {
     id: "data-modeling",
@@ -319,7 +685,7 @@ export const sections = [
       {
         id: "model-project",
         name: "chat_gpt_project",
-        attributes: ["projectId", "name", "description", "status"],
+        attributes: ["projectId", "name", "description", "status", "startDate", "endDate"],
       },
       {
         id: "model-repository",
@@ -367,7 +733,7 @@ export const sections = [
           {
             title: "chat_gpt_project",
             paragraphs: [
-              "chat_gpt_project enthält die Stammdaten eines verwalteten ChatGPT-Projekts. Ein Projekt beschreibt eine fachliche oder technische Arbeitseinheit, die in der Anwendung verwaltet und später im Dashboard ausgewertet werden soll.",
+              "chat_gpt_project enthält die Stammdaten eines verwalteten ChatGPT-Projekts. Ein Projekt beschreibt eine fachliche oder technische Arbeitseinheit, die in der Anwendung verwaltet und später im Dashboard ausgewertet werden soll. Über startDate und endDate kann zusätzlich der fachliche Zeitraum des Projekts beschrieben werden.",
               "Die Tabelle ist der fachliche Einstiegspunkt des Modells. Sie besitzt in diesem Stand keine Foreign Keys zu anderen Tabellen.",
             ],
           },
@@ -400,6 +766,8 @@ export const sections = [
   name VARCHAR(255) NOT NULL,
   description TEXT NULL,
   status VARCHAR(64) NOT NULL,
+  startDate DATE NULL,
+  endDate DATE NULL,
   PRIMARY KEY (projectId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

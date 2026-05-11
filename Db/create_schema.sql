@@ -17,6 +17,8 @@ CREATE TABLE chat_gpt_project (
   name VARCHAR(255) NOT NULL,
   description TEXT NULL,
   status VARCHAR(64) NOT NULL,
+  startDate DATE NULL,
+  endDate DATE NULL,
   PRIMARY KEY (projectId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
