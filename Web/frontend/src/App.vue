@@ -1,13 +1,21 @@
 <template>
-  <AppShell :server-status="serverStatus" @select-section="selectSection">
+  <AppShell
+    :server-status="serverStatus"
+    :show-server-log="showServerLog"
+    @refresh-server-status="refreshServerStatus"
+    @select-section="selectSection"
+    @update:show-server-log="setShowServerLog"
+  >
     <template #sidebar>
       <NavigationTree
         :active-section="activeSection"
+        :show-server-log="showServerLog"
         @select-section="selectSection"
       />
     </template>
 
     <DashboardApplication v-if="activeSection === 'dashboard'" :active-item="activeItem" />
+    <ServerLogView v-else-if="activeSection === 'server-log'" />
     <AnalysisWorkspace
       v-else
       :active-item="activeItem"
@@ -20,24 +28,37 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import AnalysisWorkspace from "./analysis/components/AnalysisWorkspace.vue";
 import { sections, useCases } from "./analysis/data/sections.js";
 import AppShell from "./app-shell/components/AppShell.vue";
 import NavigationTree from "./app-shell/components/NavigationTree.vue";
+import ServerLogView from "./app-shell/components/ServerLogView.vue";
 import DashboardApplication from "./dashboard/views/DashboardApplication.vue";
 import { fetchServerStatus } from "./shared/api/serverStatusApi.js";
 
 const activeSection = ref("dashboard");
 const serverStatus = ref("stopped");
-let serverStatusIntervalId;
+const showServerLog = ref(true);
 
 const activeItem = computed(
   () => sections.find((section) => section.id === activeSection.value) ?? sections[0],
 );
 
 function selectSection(sectionId) {
+  if (sectionId === "server-log" && !showServerLog.value) {
+    return;
+  }
+
   activeSection.value = sectionId;
+}
+
+function setShowServerLog(value) {
+  showServerLog.value = value;
+
+  if (!value && activeSection.value === "server-log") {
+    activeSection.value = "dashboard";
+  }
 }
 
 function findSectionBySubsectionId(subsectionId) {
@@ -78,7 +99,6 @@ function hasSubsectionWithId(subsections, id) {
 
 onMounted(() => {
   refreshServerStatus();
-  serverStatusIntervalId = window.setInterval(refreshServerStatus, 5000);
 
   const hash = decodeURIComponent(window.location.hash.replace("#", ""));
 
@@ -100,10 +120,6 @@ onMounted(() => {
   nextTick(() => {
     document.getElementById(hash)?.scrollIntoView({ block: "start" });
   });
-});
-
-onBeforeUnmount(() => {
-  window.clearInterval(serverStatusIntervalId);
 });
 
 async function refreshServerStatus() {

@@ -4,7 +4,10 @@ import { serverConfig } from "./config/serverConfig.js";
 import { sendError, sendJson } from "./http/jsonResponse.js";
 import { getLogFilePath, logError, logInfo } from "./logging/logger.js";
 import { handleHealthRoute } from "./routes/healthRoutes.js";
+import { handleLogRoute } from "./routes/logRoutes.js";
 import { handleProjectRoute } from "./routes/projectRoutes.js";
+
+const quietRequestPaths = new Set(["/api/health", "/api/server-log"]);
 
 function applyCorsHeaders(response) {
   response.setHeader("Access-Control-Allow-Origin", "*");
@@ -30,6 +33,10 @@ async function handleRequest(request, response, config) {
     return;
   }
 
+  if (await handleLogRoute(request, response, requestUrl)) {
+    return;
+  }
+
   sendError(response, 404, "API-Pfad wurde nicht gefunden.");
 }
 
@@ -38,6 +45,12 @@ export function createApiServer(config = serverConfig) {
     const startTime = Date.now();
 
     response.on("finish", () => {
+      const requestUrl = new URL(request.url, `http://${request.headers.host ?? `${config.host}:${config.port}`}`);
+
+      if (quietRequestPaths.has(requestUrl.pathname)) {
+        return;
+      }
+
       logInfo("API request completed", {
         method: request.method,
         url: request.url,

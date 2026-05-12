@@ -15,13 +15,17 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import NavigationTreeNode from "./NavigationTreeNode.vue";
 import { sections } from "../../analysis/data/sections.js";
 
 const props = defineProps({
   activeSection: {
     type: String,
+    required: true,
+  },
+  showServerLog: {
+    type: Boolean,
     required: true,
   },
 });
@@ -35,7 +39,24 @@ for (const section of sections) {
   collectTreeRelations(section);
 }
 
-const rootSections = sections.filter((section) => !childIds.has(section.id));
+const rootSections = computed(() => {
+  const dashboardSection = {
+    ...sections.find((section) => section.id === "dashboard"),
+    children: props.showServerLog
+      ? [
+          {
+            id: "server-log",
+            label: "Server Log",
+          },
+        ]
+      : undefined,
+  };
+
+  return [
+    dashboardSection,
+    ...sections.filter((section) => section.id !== "dashboard" && !childIds.has(section.id)),
+  ];
+});
 const expandedNodes = ref(new Set());
 
 watch(
