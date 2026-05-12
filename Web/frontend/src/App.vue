@@ -90,6 +90,8 @@
       </div>
     </section>
 
+    <DashboardApplication v-if="activeSection === 'dashboard'" />
+
     <section v-if="activeItem.contentSections" class="content-sections">
       <article
         v-for="contentSection in activeItem.contentSections"
@@ -202,7 +204,7 @@
       </article>
     </section>
 
-    <section v-else class="detail-grid">
+    <section v-else-if="activeSection !== 'dashboard'" class="detail-grid">
       <article class="detail-card detail-card--primary">
         <p class="detail-card__label">Rolle im Projekt</p>
         <h2>{{ activeItem.focusTitle }}</h2>
@@ -228,6 +230,7 @@
 import { computed, nextTick, onMounted, ref } from "vue";
 import AppShell from "./components/AppShell.vue";
 import NavigationTree from "./components/NavigationTree.vue";
+import DashboardApplication from "./views/DashboardApplication.vue";
 import { sections, useCases } from "./data/sections.js";
 
 const activeSection = ref("dashboard");

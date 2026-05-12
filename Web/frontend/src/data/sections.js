@@ -408,12 +408,12 @@ export const sections = [
   {
     id: "dashboard",
     label: "Dashboard",
-    meta: "Development-Zustand",
+    meta: "Applikation",
     eyebrow: "Applikation",
-    title: "Dashboard für Projektaktivitäten",
+    title: "Dashboard",
     lead:
-      "Hier entsteht die kleine Anwendung, die den Entwicklungszustand der verwalteten ChatGPT-Projekte sichtbar macht.",
-    chips: ["Projekte", "Aktivitäten", "Status"],
+      "Einstieg in die Projektadministration und spätere Auswertung der verwalteten ChatGPT-Projekte.",
+    chips: [],
     focusTitle: "Operative Sicht",
     focusText:
       "Das Dashboard ist die Arbeitsansicht für laufende Projekte. Es soll später zeigen, welche Projekte existieren, welche Sitzungen oder Aktivitäten zuletzt erfasst wurden und wo sich auswertbare Daten ergeben.",
