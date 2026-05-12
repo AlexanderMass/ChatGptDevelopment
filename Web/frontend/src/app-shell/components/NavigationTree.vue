@@ -17,7 +17,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import NavigationTreeNode from "./NavigationTreeNode.vue";
-import { sections } from "../data/sections.js";
+import { sections } from "../../analysis/data/sections.js";
 
 const props = defineProps({
   activeSection: {

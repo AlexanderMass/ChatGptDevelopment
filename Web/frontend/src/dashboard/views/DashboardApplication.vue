@@ -1,5 +1,11 @@
 <template>
   <section class="dashboard-app" aria-label="Dashboard">
+    <section class="hero-card">
+      <p class="hero-card__eyebrow">{{ activeItem.eyebrow }}</p>
+      <h1>{{ activeItem.title }}</h1>
+      <p class="hero-card__lead">{{ activeItem.lead }}</p>
+    </section>
+
     <div class="dashboard-app__toolbar">
       <button class="dashboard-action" type="button" @click="openDialog('create')">
         Projekt anlegen
@@ -47,6 +53,13 @@
 <script setup>
 import ProjectDialog from "../components/ProjectDialog.vue";
 import { useProjectAdministration } from "../composables/useProjectAdministration.js";
+
+defineProps({
+  activeItem: {
+    type: Object,
+    required: true,
+  },
+});
 
 const {
   today,
