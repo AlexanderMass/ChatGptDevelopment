@@ -83,3 +83,15 @@ Stattdessen enthält `check_in_metric` für den ersten Stand nur stabile, direkt
 - `isMergeCommit`
 
 Weitere Detailinformationen aus Git sollen erst dann ergänzt werden, wenn konkrete Auswertungsfragen entstehen. Dann kann die Tabelle erweitert oder ein eigenes Detailmodell ergänzt werden.
+
+## Operative Datenbereitstellung
+
+Die Weboberflaeche bleibt statisch und wird weiterhin ueber den vorhandenen Caddy-Service ausgeliefert. Dynamische Datenbank- und Git-Funktionen sollen nicht im Browser implementiert werden, sondern ueber einen lokalen Node.js-Server bereitgestellt werden.
+
+Node.js wird dabei semantisch als lokaler REST/API-Server verstanden. Das Frontend ruft REST-Endpunkte auf; der Node-Server kapselt MySQL-Zugriffe, Git-Auswertungen, Dateisystemzugriffe und fachliche Serviceablaeufe.
+
+Fuer die private Projektlandschaft wird ein Service pro Applikation bevorzugt. Fuer dieses Projekt waere das ein eigener Windows-Service, zum Beispiel `ChatGptDevelopmentApi`, der den Node-Server startet. Caddy und Node bleiben damit klar getrennt: Caddy liefert statische Dateien, Node liefert dynamische REST-Services.
+
+Der Node-Server soll spaeter per NSSM als Microsoft-Service eingerichtet werden, damit er beim Systemstart automatisch verfuegbar ist. Node.js selbst ist nur die installierte Laufzeitumgebung; dauerhaft laufen soll die konkrete Serverapplikation.
+
+Bei Node.js-Updates bleibt der Service normalerweise gueltig, solange der Pfad zu `node.exe` gleich bleibt. Wird nur der Servercode geaendert, reicht ein Neustart des Services. Nur wenn sich der Node-Pfad oder das Startskript aendert, muss die Service-Konfiguration angepasst werden.

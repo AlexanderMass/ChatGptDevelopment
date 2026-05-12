@@ -273,7 +273,7 @@ export const useCases = [
         paragraphs: [
           "Der Use Case Präsentation in grafischer Form beschreibt die graphenbasierte Auswertung der erfassten Projekt- und Metrikdaten.",
           "Es können mehrere Grafiktypen angeboten werden. Einige Grafiktypen benötigen ein konkretes Projekt, andere können projektübergreifend oder über alle Projekte aggregiert dargestellt werden.",
-          "Die X-Achse ist in der Regel eine Zeitachse. Die Y-Achse wird durch die jeweils dargestellte Metrik bestimmt.",
+          "Die X-Achse ist in der Regel eine Zeitachse. Dabei werden die Check-in-Metrik-Objekte zeitlich gruppiert. Diese Gruppierung ist administrierbar und erfolgt pro Tag oder pro Woche. Die Y-Achse wird durch die jeweils dargestellte Metrik bestimmt.",
         ],
         table: {
           columns: ["Grafiktyp", "Projekt erforderlich", "Beschreibung"],
@@ -289,9 +289,14 @@ export const useCases = [
               "Stellt dar, wie sich die Anzahl der innerhalb eines Projekts verwalteten Files über die Zeit entwickelt.",
             ],
             [
-              "Anzahl der Lines of Code",
+              "Nettoänderung der Lines of Code",
               "Ja",
-              "Stellt dar, wie sich die Anzahl der Lines of Code innerhalb eines Projekts über die Zeit entwickelt.",
+              "Stellt dar, wie stark sich die Lines of Code innerhalb einer Zeitgruppe verändert haben.",
+            ],
+            [
+              "Kumulierte Lines of Code",
+              "Ja",
+              "Stellt dar, wie sich der Sourcecode-Bestand eines Projekts über die Zeit entwickelt.",
             ],
           ],
         },
@@ -300,21 +305,28 @@ export const useCases = [
             id: "algorithmus-grafiktyp-check-in-count",
             title: "Algorithmus Grafiktyp 1: Check-in-Count innerhalb eines Projekts",
             paragraphs: [
-              "Die algorithmische Ermittlung dieses Grafiktyps wird im weiteren Designverlauf beschrieben.",
+              "Die Check-in-Metrik-Objekte des selektierten Projekts werden entlang der Zeitachse gruppiert. Die Gruppierung erfolgt abhängig von der Administration pro Tag oder pro Woche. Für jede Zeitgruppe wird gezählt, wie viele Check-in-Metrik-Objekte enthalten sind; dieser Zählwert bildet den Y-Wert der Grafik.",
             ],
           },
           {
             id: "algorithmus-grafiktyp-file-count",
             title: "Algorithmus Grafiktyp 2: Anzahl der Files innerhalb eines Projekts",
             paragraphs: [
-              "Die algorithmische Ermittlung dieses Grafiktyps wird im weiteren Designverlauf beschrieben.",
+              "Die Check-in-Metrik-Objekte des selektierten Projekts werden wie bei Grafiktyp 1 pro Tag oder pro Woche gruppiert. Für jede Zeitgruppe wird aus dem Attribut `trackedFileCount` der Maximalwert ermittelt. Dieser Maximalwert bildet den Y-Wert und zeigt, wie viele getrackte Files bis zu diesem Tag beziehungsweise bis zu dieser Woche erreicht wurden.",
             ],
           },
           {
             id: "algorithmus-grafiktyp-lines-of-code",
-            title: "Algorithmus Grafiktyp 3: Anzahl der Lines of Code",
+            title: "Algorithmus Grafiktyp 3: Nettoänderung der Lines of Code",
             paragraphs: [
-              "Die algorithmische Ermittlung dieses Grafiktyps wird im weiteren Designverlauf beschrieben.",
+              "Die Check-in-Metrik-Objekte des selektierten Projekts werden wie bei den vorherigen Grafiktypen pro Tag oder pro Woche gruppiert. Für jede Zeitgruppe wird die Summe der `netLineChange`-Werte gebildet. Dieser Summenwert bildet den Y-Wert und charakterisiert die Nettoänderung der Lines of Code innerhalb der jeweiligen Zeitgruppe.",
+            ],
+          },
+          {
+            id: "algorithmus-grafiktyp-cumulative-lines-of-code",
+            title: "Algorithmus Grafiktyp 4: Kumulierte Lines of Code",
+            paragraphs: [
+              "Die Check-in-Metrik-Objekte des selektierten Projekts werden zeitlich ab dem Projektstart ausgewertet und pro Tag oder pro Woche gruppiert. Für jede Zeitgruppe wird zunächst die Summe der `netLineChange`-Werte gebildet. Anschließend werden diese Gruppensummen chronologisch kumuliert. Der kumulierte Wert bildet den Y-Wert und zeigt, wie viel Sourcecode im Projekt über die Zeit hinzugekommen ist.",
             ],
           },
         ],
@@ -625,7 +637,7 @@ export const sections = [
             title: "Paneel 2: Graphenbasierte Darstellung",
             paragraphs: [
               "Das zweite Paneel enthält zwei Bereiche: einen oberen Administrationsbereich und einen unteren Bereich für die Darstellung eines Graphen.",
-              "Der Administrationsbereich enthält zwei Komboboxen. In der ersten Kombobox wird der Graphentyp ausgewählt. Die zweite Kombobox dient der Projektauswahl und wird nur aktiviert, wenn der ausgewählte Graphentyp eine Projektspezifikation benötigt.",
+              "Der Administrationsbereich enthält drei Komboboxen. In der ersten Kombobox wird der Graphentyp ausgewählt. Die zweite Kombobox dient der Projektauswahl und wird nur aktiviert, wenn der ausgewählte Graphentyp eine Projektspezifikation benötigt. Die dritte Kombobox administriert die zeitliche Gruppierung und bietet die Werte tägliche Gruppierung und wöchentliche Gruppierung an.",
               "Wird eine Projektspezifikation benötigt, werden die Projekte zeitlich sortiert angezeigt. Die Default-Belegung ist das zeitlich zuletzt angelegte Projekt; maßgeblich ist dabei das Startdatum des Projekts.",
               "Im unteren Bereich wird die Grafik dargestellt. Die X-Achse ist in der Regel zeitabhängig, während auf der Y-Achse die jeweilige Metrik angezeigt wird.",
             ],
