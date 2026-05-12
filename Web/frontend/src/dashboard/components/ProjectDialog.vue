@@ -57,10 +57,15 @@
         </div>
 
         <p class="project-dialog__hint">{{ config.hint }}</p>
+        <p v-if="errorMessage" class="project-dialog__error">{{ errorMessage }}</p>
 
         <div class="project-dialog__actions">
-          <button class="project-dialog__button project-dialog__button--primary" type="submit">OK</button>
-          <button class="project-dialog__button" type="button" @click="$emit('close')">Abbrechen</button>
+          <button class="project-dialog__button project-dialog__button--primary" type="submit" :disabled="isSaving">
+            {{ isSaving ? "Speichern..." : "OK" }}
+          </button>
+          <button class="project-dialog__button" type="button" :disabled="isSaving" @click="$emit('close')">
+            Abbrechen
+          </button>
         </div>
       </form>
     </section>
@@ -80,6 +85,14 @@ defineProps({
   today: {
     type: String,
     required: true,
+  },
+  isSaving: {
+    type: Boolean,
+    required: true,
+  },
+  errorMessage: {
+    type: String,
+    default: "",
   },
 });
 

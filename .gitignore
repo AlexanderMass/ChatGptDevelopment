@@ -1,3 +1,5 @@
 Web/frontend/node_modules/
 Web/frontend/dist/
+Web/server/node_modules/
+Web/server/logs/
 .env.local

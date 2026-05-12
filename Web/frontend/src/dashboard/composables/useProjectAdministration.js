@@ -1,4 +1,9 @@
-import { computed, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
+import {
+  createProject,
+  fetchProjects,
+  updateProject
+} from "../api/projectApi.js";
 
 const DIALOG_CONFIG = {
   create: {
@@ -11,23 +16,41 @@ const DIALOG_CONFIG = {
   admin: {
     title: "Projekt administrieren",
     nameEditable: false,
-    startDateEditable: false,
+    startDateEditable: true,
     endDateEditable: true,
     hint: "Beim Administrieren sind Name und Projektstart gesperrt. Das Projektende kann gesetzt oder geändert werden.",
   },
 };
 
+DIALOG_CONFIG.admin.hint = "Beim Administrieren bleibt der Name gesperrt. Projektstart und Projektende koennen gesetzt oder geaendert werden.";
+
 export function useProjectAdministration() {
   const today = getToday();
   const dialogMode = ref(null);
   const projects = ref([]);
+  const isSaving = ref(false);
+  const statusMessage = ref("");
+  const errorMessage = ref("");
   const projectForm = reactive(createEmptyProjectForm(today));
 
-  const lastProject = computed(() => projects.value[projects.value.length - 1] ?? null);
+  const lastProject = computed(() => projects.value[0] ?? null);
   const dialogConfig = computed(() => DIALOG_CONFIG[dialogMode.value] ?? DIALOG_CONFIG.create);
+
+  onMounted(loadProjects);
+
+  async function loadProjects() {
+    try {
+      errorMessage.value = "";
+      projects.value = await fetchProjects();
+    } catch (error) {
+      errorMessage.value = error.message;
+    }
+  }
 
   function openDialog(mode) {
     dialogMode.value = mode;
+    statusMessage.value = "";
+    errorMessage.value = "";
 
     if (mode === "create") {
       resetForm(today, projectForm);
@@ -45,31 +68,39 @@ export function useProjectAdministration() {
     projectForm[field] = value;
   }
 
-  function confirmDialog() {
-    if (dialogMode.value === "create") {
-      projects.value = [
-        ...projects.value,
-        {
-          id: `${Date.now()}`,
+  async function confirmDialog() {
+    isSaving.value = true;
+    errorMessage.value = "";
+
+    try {
+      if (dialogMode.value === "create") {
+        const createdProject = await createProject({
           name: projectForm.name.trim(),
           description: projectForm.description.trim(),
           startDate: projectForm.startDate,
-          endDate: "",
-        },
-      ];
-    } else if (lastProject.value) {
-      projects.value = projects.value.map((project) =>
-        project.id === lastProject.value.id
-          ? {
-              ...project,
-              description: projectForm.description.trim(),
-              endDate: projectForm.endDate,
-            }
-          : project,
-      );
-    }
+        });
 
-    closeDialog();
+        projects.value = [createdProject, ...projects.value];
+        statusMessage.value = `Projekt "${createdProject.name}" wurde angelegt.`;
+      } else if (lastProject.value) {
+        const updatedProject = await updateProject(lastProject.value.projectId, {
+          description: projectForm.description.trim(),
+          startDate: projectForm.startDate,
+          endDate: projectForm.endDate,
+        });
+
+        projects.value = projects.value.map((project) =>
+          project.projectId === updatedProject.projectId ? updatedProject : project,
+        );
+        statusMessage.value = `Projekt "${updatedProject.name}" wurde aktualisiert.`;
+      }
+
+      closeDialog();
+    } catch (error) {
+      errorMessage.value = error.message;
+    } finally {
+      isSaving.value = false;
+    }
   }
 
   return {
@@ -78,6 +109,9 @@ export function useProjectAdministration() {
     dialogConfig,
     projectForm,
     lastProject,
+    isSaving,
+    statusMessage,
+    errorMessage,
     openDialog,
     closeDialog,
     confirmDialog,

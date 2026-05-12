@@ -1,27 +1,31 @@
 <template>
   <section class="dashboard-app" aria-label="Dashboard">
-    <section class="hero-card">
-      <p class="hero-card__eyebrow">{{ activeItem.eyebrow }}</p>
-      <h1>{{ activeItem.title }}</h1>
-      <p class="hero-card__lead">{{ activeItem.lead }}</p>
+    <section class="dashboard-hero">
+      <div class="dashboard-hero__row">
+        <h1>{{ activeItem.title }}</h1>
+        <p>Projektadministration und spätere Auswertung der verwalteten ChatGPT-Projekte.</p>
+      </div>
+
+      <div class="dashboard-hero__status">
+        <span>Status:</span>
+        <p>
+          <strong>Erster vertikaler Oberflächenschnitt.</strong> Der Projektdialog ist zunächst rein
+          oberflächenseitig angebunden; die spätere Node/API- und Datenbankanbindung
+          ersetzt die lokale Simulation beim Klick auf OK.
+        </p>
+      </div>
     </section>
 
-    <div class="dashboard-app__toolbar">
-      <button class="dashboard-action" type="button" @click="openDialog('create')">
-        Projekt anlegen
-      </button>
-      <button class="dashboard-action dashboard-action--secondary" type="button" @click="openDialog('admin')">
-        Projekt administrieren
-      </button>
-    </div>
+    <article class="dashboard-app__workspace">
+      <div class="dashboard-app__toolbar">
+        <button class="dashboard-action" type="button" @click="openDialog('create')">
+          Projekt anlegen
+        </button>
+        <button class="dashboard-action dashboard-action--secondary" type="button" @click="openDialog('admin')">
+          Projekt administrieren
+        </button>
+      </div>
 
-    <article class="dashboard-app__panel">
-      <p class="dashboard-app__eyebrow">Projektadministration</p>
-      <h2>Erster vertikaler Oberflächen-Schnitt</h2>
-      <p>
-        Der Projektdialog ist hier zunächst rein oberflächenseitig angebunden.
-        Die spätere Node/API- und Datenbankanbindung ersetzt die lokale Simulation beim Klick auf OK.
-      </p>
       <dl v-if="lastProject" class="dashboard-app__summary">
         <div>
           <dt>Letztes Projekt</dt>
@@ -36,12 +40,17 @@
           <dd>{{ formatDate(lastProject.endDate) }}</dd>
         </div>
       </dl>
+
+      <p v-if="statusMessage" class="dashboard-app__status">{{ statusMessage }}</p>
+      <p v-if="errorMessage" class="dashboard-app__error">{{ errorMessage }}</p>
     </article>
 
     <ProjectDialog
       v-if="dialogMode"
       :config="dialogConfig"
       :form="projectForm"
+      :is-saving="isSaving"
+      :error-message="errorMessage"
       :today="today"
       @close="closeDialog"
       @confirm="confirmDialog"
@@ -67,6 +76,9 @@ const {
   dialogConfig,
   projectForm,
   lastProject,
+  isSaving,
+  statusMessage,
+  errorMessage,
   openDialog,
   closeDialog,
   confirmDialog,
