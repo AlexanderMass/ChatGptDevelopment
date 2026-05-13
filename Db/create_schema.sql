@@ -35,7 +35,7 @@ CREATE TABLE git_repository (
     FOREIGN KEY (projectId)
     REFERENCES chat_gpt_project (projectId)
     ON UPDATE CASCADE
-    ON DELETE RESTRICT
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE check_in_metric (

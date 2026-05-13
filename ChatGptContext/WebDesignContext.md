@@ -38,6 +38,15 @@ Die Oberfläche wurde bewusst auf zwei Hauptbereiche eingedampft:
 
 Die linke Navigation bleibt dadurch sehr schlank. Weitere fachliche Tiefe soll innerhalb der beiden Bereiche entstehen, nicht als wachsende Liste von Hauptnavigationspunkten.
 
+## Visualisierungsframeworks
+
+Für die grafische Darstellung von Projektmetriken wird `Apache ECharts` als Standard-Visualisierungsframework eingesetzt. Die Entscheidung passt zum aktuellen Dashboard-Scope, weil ECharts viele klassische Diagrammtypen abdeckt, insbesondere Zeitreihen, Linien-, Balken- und kombinierte Metrikdiagramme. Die Bibliothek wird im Frontend als npm-Abhängigkeit geführt.
+
+Für modellgetriebene Diagramme wie Use-Case-Netze, Mindmaps, Abhängigkeitsgraphen oder andere Knoten-Kanten-Modelle wird `Cytoscape.js` als spätere Technologieoption vorgemerkt. Cytoscape wird aktuell nicht installiert, weil der unmittelbare Implementierungsschritt Metrikdiagramme betrifft. Methodisch gilt:
+
+- `Apache ECharts`: Metriken, Zeitachsen, Dashboard-Auswertungen
+- `Cytoscape.js`: Modelle, Mindmaps, Use Cases, Beziehungsnetze
+
 ## Analysebereich
 
 Der Bereich `Analyse` ist als dokumentierender Arbeitsraum aufgebaut und enthält zwei erste Unterpunkte:

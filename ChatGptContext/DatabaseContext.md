@@ -48,8 +48,10 @@ Wichtige Attribute von `chat_gpt_project`:
 
 Wichtige Foreign-Key-Beziehungen:
 
-- `git_repository.projectId` verweist auf `chat_gpt_project.projectId`
-- `check_in_metric.repositoryId` verweist auf `git_repository.repositoryId`
+- `git_repository.projectId` verweist auf `chat_gpt_project.projectId` mit `ON DELETE CASCADE`
+- `check_in_metric.repositoryId` verweist auf `git_repository.repositoryId` mit `ON DELETE CASCADE`
+
+Damit gilt für Löschvorgänge: Wird ein Projekt gelöscht, werden die zugeordneten Git-Repositories automatisch entfernt. Durch die zweite Kaskade werden dabei auch die zugehörigen Check-in-Metriken gelöscht.
 
 Aggregierte Werte sollen zunächst nicht dauerhaft gespeichert werden. Tägliche und wöchentliche Auswertungen werden aus `check_in_metric.commitDate` per SQL `GROUP BY` oder alternativ in Python gruppiert und berechnet.
 

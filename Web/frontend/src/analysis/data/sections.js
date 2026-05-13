@@ -135,7 +135,7 @@ export const useCases = [
           "Auch die dem Projekt zugewiesenen Repositories können administriert werden. Der Nutzer kann neue Repositories aufnehmen oder bereits im Projekt vermerkte Repositories entfernen.",
           "Drückt der Nutzer zum Abschluss des Dialogs auf OK, werden die geänderten Daten gespeichert. Stellt das System dabei fest, dass ein oder mehrere Repositories entfernt wurden, erscheint zuvor eine Warnung. Diese Warnung weist darauf hin, dass Repository-Zuordnungen gelöscht wurden und dass dadurch die entsprechenden Verweise auf der Datenbank entfernt würden.",
           "Bestätigt der Nutzer die Warnung nicht, bleibt der Projekt-Dialog geöffnet. Der Nutzer kann die Repository-Administration korrigieren und anschließend erneut versuchen, den Dialog mit OK zu beenden.",
-          "Bestätigt der Nutzer die Warnung, werden die entfernten Git-Repositories in der Datenbank gelöscht. Da an einem Git-Repository optional Check-in-Metriken hängen, müssen algorithmisch zuerst alle zugehörigen Datensätze aus `check_in_metric` entfernt werden. Erst danach wird die betroffene Instanz aus `git_repository` gelöscht.",
+          "Bestätigt der Nutzer die Warnung, werden die entfernten Git-Repositories in der Datenbank gelöscht. Zugehörige Check-in-Metriken werden dabei durch die Foreign-Key-Regel `ON DELETE CASCADE` automatisch entfernt.",
         ],
       },
       {
@@ -754,7 +754,7 @@ export const sections = [
             title: "git_repository",
             paragraphs: [
               "git_repository beschreibt ein Git-Repository, das einem ChatGPT-Projekt zugeordnet ist. Ein Projekt kann ein oder mehrere Repositories besitzen, weil technische Artefakte und Git-Historie nicht zwingend in genau einem Repository liegen müssen.",
-              "Die Foreign-Key-Beziehung `git_repository.projectId` verweist auf `chat_gpt_project.projectId`. Dadurch wird jedes Repository einem verwalteten ChatGPT-Projekt zugeordnet.",
+              "Die Foreign-Key-Beziehung `git_repository.projectId` verweist auf `chat_gpt_project.projectId`. Dadurch wird jedes Repository einem verwalteten ChatGPT-Projekt zugeordnet. Wird ein Projekt gelöscht, werden die zugeordneten Git-Repositories über `ON DELETE CASCADE` automatisch entfernt.",
               "Repository-weite Kennzahlen wie `firstCheckInDate`, `lastCheckInDate` und `checkInCount` werden direkt bei git_repository geführt. Sie beschreiben verdichtete Historienmerkmale des Repositories und müssen nicht als einzelne Check-in-Metriken modelliert werden.",
             ],
           },
@@ -762,7 +762,7 @@ export const sections = [
             title: "check_in_metric",
             paragraphs: [
               "check_in_metric enthält einzelne aus Git gelesene oder abgeleitete Check-in-Metriken. Diese Daten werden nicht manuell gepflegt, sondern durch die Analyse der zugeordneten Git-Repositories und ihrer Check-ins ermittelt.",
-              "Die Foreign-Key-Beziehung `check_in_metric.repositoryId` verweist auf `git_repository.repositoryId`. Dadurch gehört jede Check-in-Metrik eindeutig zu dem Repository, aus dem der Check-in gelesen wurde.",
+              "Die Foreign-Key-Beziehung `check_in_metric.repositoryId` verweist auf `git_repository.repositoryId`. Dadurch gehört jede Check-in-Metrik eindeutig zu dem Repository, aus dem der Check-in gelesen wurde. Wird ein Git-Repository gelöscht, werden die zugehörigen Check-in-Metriken ebenfalls per `ON DELETE CASCADE` entfernt.",
               "`trackedFileCount` wird als Check-in-Metrik geführt, weil damit pro Check-in festgehalten wird, wie viele von Git verwaltete Dateien zu diesem Zeitpunkt existierten. Der aktuelle Wert für ein Repository kann später über den letzten Check-in ermittelt werden.",
               "Tägliche oder wöchentliche Aggregationen werden nicht als eigene Tabellen modelliert. Sie können bei der Präsentation aus `check_in_metric.commitDate` per SQL `GROUP BY` oder alternativ in Python gruppiert und berechnet werden.",
             ],
@@ -797,7 +797,7 @@ CREATE TABLE git_repository (
     FOREIGN KEY (projectId)
     REFERENCES chat_gpt_project (projectId)
     ON UPDATE CASCADE
-    ON DELETE RESTRICT
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE check_in_metric (

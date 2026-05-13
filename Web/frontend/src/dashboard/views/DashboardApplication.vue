@@ -1,103 +1,203 @@
 <template>
   <section class="dashboard-app" aria-label="Dashboard">
-    <section class="dashboard-hero">
-      <div class="dashboard-hero__row">
-        <h1>{{ activeItem.title }}</h1>
-        <p>Projektadministration und spätere Auswertung der verwalteten ChatGPT-Projekte.</p>
-      </div>
-
-      <div class="dashboard-hero__status">
-        <span>Status:</span>
-        <p><strong>Oberflächendesign der Hauptseite.</strong> Projektpflegeanteil.</p>
-      </div>
-    </section>
-
     <article class="dashboard-app__workspace">
-      <section class="project-maintenance-panel" @click="closeProjectContextMenu">
-        <div class="project-maintenance-panel__table-wrap">
-          <table class="project-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Projektstart</th>
-                <th>Projektende</th>
-                <th>Repositories</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="project in projects"
-                :key="project.projectId"
-                :data-project-row-id="project.projectId"
-                :class="{ 'project-table__row--selected': selectedProject?.projectId === project.projectId }"
-                @click.stop="selectProject(project)"
-                @contextmenu.prevent="openProjectContextMenu($event, project)"
-                @mouseenter="openProjectTooltip($event, project)"
-                @mousemove="moveProjectTooltip($event)"
-                @mouseleave="closeProjectTooltip"
-              >
-                <td>{{ project.name }}</td>
-                <td>{{ project.status }}</td>
-                <td>{{ formatDate(project.startDate) }}</td>
-                <td>{{ formatDate(project.endDate) }}</td>
-                <td>{{ project.repositories?.length ?? 0 }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <aside class="project-maintenance-panel__actions">
-          <button class="dashboard-action" type="button" @click.stop="openDialog('create')">
-            Projekt anlegen
-          </button>
-          <button
-            class="dashboard-action dashboard-action--secondary"
-            type="button"
-            :disabled="isAnalyzing"
-            @click.stop="analyzeGitData"
-          >
-            {{ isAnalyzing ? "Analyse läuft..." : "Git-Daten analysieren" }}
-          </button>
-        </aside>
-
-        <Teleport to="body">
-          <div
-            v-if="projectContextMenu"
-            class="project-context-menu"
-            :style="{ left: `${projectContextMenu.x}px`, top: `${projectContextMenu.y}px` }"
-            @click.stop
-          >
-            <button type="button" @click="administerContextProject">
-              Projekt administrieren
-            </button>
-          </div>
-        </Teleport>
-
-        <Teleport to="body">
-          <div
-            v-if="projectTooltip"
-            class="project-tooltip"
-            :style="{ left: `${projectTooltip.x}px`, top: `${projectTooltip.y}px` }"
-          >
-            <table>
+      <section class="dashboard-bubble dashboard-bubble--project-admin">
+        <section class="project-maintenance-panel" @click="closeProjectContextMenu">
+          <div class="project-maintenance-panel__table-wrap">
+            <table class="project-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Projektstart</th>
+                  <th>Projektende</th>
+                  <th>Repositories</th>
+                </tr>
+              </thead>
               <tbody>
                 <tr
-                  v-for="repository in projectTooltip.project.repositories"
-                  :key="repository.repositoryId ?? repository.path"
+                  v-for="project in projects"
+                  :key="project.projectId"
+                  :data-project-row-id="project.projectId"
+                  :class="{ 'project-table__row--selected': selectedProject?.projectId === project.projectId }"
+                  @click.stop="selectProject(project)"
+                  @contextmenu.prevent="openProjectContextMenu($event, project)"
+                  @mouseenter="openProjectTooltip($event, project)"
+                  @mousemove="moveProjectTooltip($event)"
+                  @mouseleave="closeProjectTooltip"
                 >
-                  <td>{{ repositoryName(repository) }}</td>
-                  <td>{{ formatDateOnly(repository.firstCheckInDate) }}</td>
-                  <td>{{ formatDateOnly(repository.lastCommitDate) }}</td>
-                  <td>{{ repository.checkInCount ?? 0 }} Commits</td>
-                </tr>
-                <tr v-if="!projectTooltip.project.repositories?.length">
-                  <td colspan="4">Keine Repositories zugeordnet</td>
+                  <td>{{ project.name }}</td>
+                  <td>{{ project.status }}</td>
+                  <td>{{ formatDate(project.startDate) }}</td>
+                  <td>{{ formatDate(project.endDate) }}</td>
+                  <td>{{ project.repositories?.length ?? 0 }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </Teleport>
+
+          <aside class="project-maintenance-panel__actions">
+            <button class="dashboard-action" type="button" @click.stop="openDialog('create')">
+              Projekt anlegen
+            </button>
+            <button
+              class="dashboard-action dashboard-action--secondary"
+              type="button"
+              :disabled="isAnalyzing"
+              @click.stop="analyzeGitData"
+            >
+              {{ isAnalyzing ? "Analyse läuft..." : "Git-Daten analysieren" }}
+            </button>
+          </aside>
+
+          <Teleport to="body">
+            <div
+              v-if="projectContextMenu"
+              class="project-context-menu"
+              :style="{ left: `${projectContextMenu.x}px`, top: `${projectContextMenu.y}px` }"
+              @click.stop
+            >
+              <button type="button" @click="administerContextProject">
+                Projekt administrieren
+              </button>
+            </div>
+          </Teleport>
+
+          <Teleport to="body">
+            <div
+              v-if="projectTooltip"
+              class="project-tooltip"
+              :style="{ left: `${projectTooltip.x}px`, top: `${projectTooltip.y}px` }"
+            >
+              <table>
+                <tbody>
+                  <tr
+                    v-for="repository in projectTooltip.project.repositories"
+                    :key="repository.repositoryId ?? repository.path"
+                  >
+                    <td>{{ repositoryName(repository) }}</td>
+                    <td>{{ formatDateOnly(repository.firstCheckInDate) }}</td>
+                    <td>{{ formatDateOnly(repository.lastCommitDate) }}</td>
+                    <td>{{ repository.checkInCount ?? 0 }} Commits</td>
+                  </tr>
+                  <tr v-if="!projectTooltip.project.repositories?.length">
+                    <td colspan="4">Keine Repositories zugeordnet</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Teleport>
+        </section>
+      </section>
+
+      <section class="dashboard-bubble dashboard-bubble--project-presentation">
+        <div class="project-presentation-tabs" role="tablist" aria-label="Projektpräsentation">
+          <button
+            :class="[
+              'project-presentation-tabs__tab',
+              { 'project-presentation-tabs__tab--active': activePresentationTab === 'table' },
+            ]"
+            type="button"
+            role="tab"
+            :aria-selected="activePresentationTab === 'table'"
+            @click="activePresentationTab = 'table'"
+          >
+            Tabellarische Sicht
+          </button>
+          <button
+            :class="[
+              'project-presentation-tabs__tab',
+              { 'project-presentation-tabs__tab--active': activePresentationTab === 'graph' },
+            ]"
+            type="button"
+            role="tab"
+            :aria-selected="activePresentationTab === 'graph'"
+            @click="activePresentationTab = 'graph'"
+          >
+            Grafische Sicht
+          </button>
+        </div>
+
+        <div v-if="activePresentationTab === 'table'" class="project-presentation-panel">
+          <div class="project-presentation-panel__toolbar">
+            <label class="project-selector">
+              <span>Projekt</span>
+              <select>
+                <option
+                  v-for="project in projects"
+                  :key="project.projectId"
+                  :value="project.projectId"
+                >
+                  {{ project.name }}
+                </option>
+              </select>
+            </label>
+          </div>
+
+          <div class="check-in-metric-table-wrap">
+            <table class="check-in-metric-table">
+              <thead>
+                <tr>
+                  <th>Commit-Datum</th>
+                  <th>Message Subject</th>
+                  <th>Dateien</th>
+                  <th>Added</th>
+                  <th>Deleted</th>
+                  <th>Net</th>
+                  <th>Churn</th>
+                  <th>Tracked Files</th>
+                  <th>Merge</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="9">Check-in-Metriken werden hier im nächsten Ausbauschritt geladen.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div v-else class="project-presentation-panel project-presentation-panel--graph">
+          <div class="project-presentation-panel__toolbar project-presentation-panel__toolbar--graph">
+            <label class="project-selector">
+              <span>Graphentyp</span>
+              <select v-model="selectedGraphType">
+                <option value="checkInCount">Check-in-Count</option>
+                <option value="trackedFileCount">Anzahl der Files</option>
+                <option value="netLineChange">Net Line Change</option>
+                <option value="sourceCodeGrowth">Sourcecode-Wachstum</option>
+              </select>
+            </label>
+
+            <label class="project-selector">
+              <span>Projekt</span>
+              <select :disabled="!selectedGraphTypeRequiresProject">
+                <option
+                  v-for="project in projects"
+                  :key="project.projectId"
+                  :value="project.projectId"
+                >
+                  {{ project.name }}
+                </option>
+              </select>
+            </label>
+
+            <label class="project-selector">
+              <span>Gruppierung</span>
+              <select>
+                <option value="daily">Tägliche Gruppierung</option>
+                <option value="weekly">Wöchentliche Gruppierung</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="graph-presentation-area">
+            <div class="graph-presentation-area__axis graph-presentation-area__axis--y"></div>
+            <div class="graph-presentation-area__axis graph-presentation-area__axis--x"></div>
+            <p>Die grafische Darstellung wird hier im nächsten Ausbauschritt aufgebaut.</p>
+          </div>
+        </div>
       </section>
 
       <p v-if="statusMessage" class="dashboard-app__status">{{ statusMessage }}</p>
@@ -213,6 +313,9 @@ const {
 
 const projectContextMenu = ref(null);
 const projectTooltip = ref(null);
+const activePresentationTab = ref("table");
+const selectedGraphType = ref("checkInCount");
+const selectedGraphTypeRequiresProject = true;
 let selectedProjectRowElement;
 
 function selectProject(project) {
