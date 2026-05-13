@@ -1,12 +1,14 @@
 import mysql from "mysql2/promise";
 import { serverConfig } from "../config/serverConfig.js";
-import { logInfo } from "../logging/logger.js";
+import { createLogger } from "../logging/logger.js";
+
+const logger = createLogger("mysqlConnection");
 
 let connectionPool;
 
 export function getConnectionPool() {
   if (!connectionPool) {
-    logInfo("Creating MySQL connection pool", {
+    logger.info("mysql.pool.creating", {
       host: serverConfig.database.host,
       port: serverConfig.database.port,
       database: serverConfig.database.database,

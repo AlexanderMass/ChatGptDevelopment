@@ -6,6 +6,12 @@ export async function fetchProjects() {
   return payload.data ?? [];
 }
 
+export async function fetchRepositories() {
+  const response = await fetch(`${apiBaseUrl}/api/repositories`);
+  const payload = await readJsonResponse(response);
+  return payload.data ?? [];
+}
+
 export async function createProject(projectInput) {
   const response = await fetch(`${apiBaseUrl}/api/projects`, {
     method: "POST",
@@ -25,6 +31,14 @@ export async function updateProject(projectId, projectInput) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(projectInput)
+  });
+  const payload = await readJsonResponse(response);
+  return payload.data;
+}
+
+export async function runGitAnalysis() {
+  const response = await fetch(`${apiBaseUrl}/api/git-analysis/run`, {
+    method: "POST"
   });
   const payload = await readJsonResponse(response);
   return payload.data;

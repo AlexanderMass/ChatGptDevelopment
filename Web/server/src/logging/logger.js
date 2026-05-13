@@ -21,12 +21,39 @@ export function getLogFilePath() {
   return logFilePath;
 }
 
-function writeLogEntry(level, message, context) {
+export function createLogger(serviceName) {
+  return {
+    info(message, context = {}) {
+      writeLogEntry("INFO", message, context, serviceName);
+    },
+    warning(message, context = {}) {
+      writeLogEntry("WARNING", message, context, serviceName);
+    },
+    error(message, error, context = {}) {
+      writeLogEntry(
+        "ERROR",
+        message,
+        {
+          ...context,
+          errorMessage: error?.message,
+          errorStack: error?.stack
+        },
+        serviceName
+      );
+    },
+    debug(message, context = {}) {
+      writeLogEntry("DEBUG", message, context, serviceName);
+    }
+  };
+}
+
+function writeLogEntry(level, message, context, serviceName = undefined) {
   fs.mkdirSync(logDirectory, { recursive: true });
 
   const entry = {
     timestamp: new Date().toISOString(),
     level,
+    service: serviceName,
     message,
     context
   };

@@ -297,6 +297,64 @@ button {
   color: #8b311f;
 }
 
+.message-box-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(31, 42, 46, 0.28);
+  backdrop-filter: blur(4px);
+}
+
+.message-box {
+  width: min(460px, 100%);
+  padding: 18px;
+  border: 1px solid rgba(255, 248, 238, 0.72);
+  border-radius: 20px;
+  background: rgba(255, 252, 247, 0.98);
+  box-shadow: 0 24px 80px rgba(31, 42, 46, 0.28);
+}
+
+.message-box__header {
+  margin-bottom: 10px;
+}
+
+.message-box h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.1rem;
+}
+
+.message-box p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.message-box__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.message-box__button {
+  width: 116px;
+  padding: 0.32rem 0.85rem;
+  border: 1px solid rgba(179, 92, 46, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 249, 241, 0.9);
+  color: var(--accent-deep);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.message-box__button--primary {
+  background: linear-gradient(135deg, rgba(179, 92, 46, 0.92), rgba(125, 59, 24, 0.88));
+  color: #fff8ed;
+}
+
 .shell__pill {
   padding: 10px 14px;
   border: 1px solid var(--line);

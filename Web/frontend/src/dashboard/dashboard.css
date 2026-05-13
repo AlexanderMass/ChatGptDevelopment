@@ -78,6 +78,119 @@
   background: var(--panel-strong);
 }
 
+.project-maintenance-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 18px;
+  align-items: start;
+}
+
+.project-maintenance-panel__table-wrap {
+  overflow: auto;
+  border: 1px solid rgba(179, 92, 46, 0.16);
+  border-radius: 18px;
+  background: rgba(255, 252, 247, 0.72);
+}
+
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.project-table th,
+.project-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(179, 92, 46, 0.12);
+  text-align: left;
+}
+
+.project-table th {
+  background: rgba(179, 92, 46, 0.1);
+  color: var(--ink);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.project-table td {
+  color: var(--muted);
+}
+
+.project-table tbody tr {
+  cursor: pointer;
+}
+
+.project-table tbody tr:hover,
+.project-table__row--selected {
+  background: rgba(232, 177, 125, 0.18);
+}
+
+.project-maintenance-panel__actions {
+  display: grid;
+  gap: 12px;
+}
+
+.project-context-menu {
+  position: fixed;
+  z-index: 40;
+  min-width: 190px;
+  padding: 8px;
+  border: 1px solid rgba(31, 42, 46, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 252, 247, 0.98);
+  box-shadow: 0 16px 44px rgba(31, 42, 46, 0.18);
+}
+
+.project-context-menu button {
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 800;
+  text-align: left;
+}
+
+.project-context-menu button:hover {
+  background: rgba(179, 92, 46, 0.12);
+}
+
+.project-tooltip {
+  position: fixed;
+  z-index: 35;
+  transform: translateY(-100%);
+  min-width: 360px;
+  max-width: 620px;
+  padding: 12px;
+  border: 1px solid rgba(31, 42, 46, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 252, 247, 0.98);
+  box-shadow: 0 16px 44px rgba(31, 42, 46, 0.16);
+  color: var(--ink);
+  pointer-events: none;
+}
+
+.project-tooltip table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.project-tooltip td {
+  padding: 5px 7px;
+  border-top: 1px solid rgba(179, 92, 46, 0.12);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.project-tooltip td:first-child {
+  color: var(--ink);
+  font-weight: 800;
+}
+
 .dashboard-action {
   min-width: 210px;
   padding: 16px 22px;
@@ -96,9 +209,55 @@
   box-shadow: 0 18px 34px rgba(73, 51, 31, 0.2);
 }
 
+.dashboard-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  transform: none;
+}
+
+.dashboard-action:disabled:hover {
+  box-shadow: 0 14px 30px rgba(73, 51, 31, 0.16);
+}
+
 .dashboard-action--secondary {
   background: rgba(255, 249, 241, 0.86);
   color: var(--accent-deep);
+}
+
+.git-analysis-result {
+  width: min(680px, calc(100vw - 48px));
+}
+
+.git-analysis-result__content {
+  display: grid;
+  gap: 12px;
+  max-height: min(58vh, 520px);
+  overflow: auto;
+}
+
+.git-analysis-result__project {
+  border: 1px solid rgba(179, 92, 46, 0.14);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(255, 252, 247, 0.72);
+}
+
+.git-analysis-result__project h3 {
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 0.98rem;
+}
+
+.git-analysis-result__project ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+}
+
+.git-analysis-result__total {
+  margin: 14px 0 0;
+  color: var(--ink);
+  font-weight: 900;
 }
 
 .dashboard-app__toolbar {
@@ -207,10 +366,68 @@
 
 .project-dialog__bubble--repositories {
   display: grid;
-  min-height: 92px;
+  gap: 10px;
+  min-height: 240px;
   color: var(--muted);
   font-weight: 800;
-  place-items: center start;
+}
+
+.project-dialog__repository-shuttle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.project-dialog__repository-column {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.project-dialog__repository-column span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.project-dialog__repository-column select {
+  width: 100%;
+  height: 18rem;
+  padding: 0.35rem;
+  border: 1px solid rgba(179, 92, 46, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+  font: inherit;
+}
+
+.project-dialog__repository-column option {
+  padding: 0.28rem 0.35rem;
+}
+
+.project-dialog__repository-actions {
+  display: grid;
+  gap: 8px;
+  align-content: center;
+  align-self: stretch;
+}
+
+.project-dialog__repository-action {
+  width: 2.7rem;
+  height: 2.25rem;
+  border: 2px solid rgba(31, 42, 46, 0.42);
+  border-radius: 999px;
+  background: rgba(232, 225, 213, 0.92);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 1.22rem;
+  box-shadow: 0 6px 14px rgba(31, 42, 46, 0.08);
+}
+
+.project-dialog__repository-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .project-dialog__close {
@@ -234,12 +451,14 @@
 .project-dialog__data {
   display: grid;
   grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1.1fr);
-  gap: 18px;
+  gap: 16px;
+  align-items: stretch;
 }
 
 .project-dialog__fields {
   display: grid;
-  gap: 14px;
+  align-content: start;
+  gap: 8px;
 }
 
 .project-field {
@@ -248,6 +467,16 @@
   gap: 4px;
   color: var(--muted);
   font-weight: 800;
+}
+
+.project-dialog__fields .project-field {
+  grid-template-columns: 8rem minmax(0, 1fr);
+  align-items: center;
+}
+
+.project-field--project-data {
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
 }
 
 .project-field input,
@@ -268,7 +497,7 @@
 }
 
 .project-field textarea {
-  min-height: 8.5rem;
+  min-height: 6.2rem;
   resize: vertical;
 }
 
@@ -317,7 +546,8 @@
   }
 
   .dashboard-app__summary,
-  .project-dialog__data {
+  .project-dialog__data,
+  .project-maintenance-panel {
     grid-template-columns: 1fr;
   }
 }

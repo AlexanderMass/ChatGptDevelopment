@@ -2,12 +2,15 @@ import http from "node:http";
 import { pathToFileURL } from "node:url";
 import { serverConfig } from "./config/serverConfig.js";
 import { sendError, sendJson } from "./http/jsonResponse.js";
-import { getLogFilePath, logError, logInfo } from "./logging/logger.js";
+import { createLogger, getLogFilePath } from "./logging/logger.js";
+import { handleGitAnalysisRoute } from "./routes/gitAnalysisRoutes.js";
 import { handleHealthRoute } from "./routes/healthRoutes.js";
 import { handleLogRoute } from "./routes/logRoutes.js";
 import { handleProjectRoute } from "./routes/projectRoutes.js";
+import { handleRepositoryRoute } from "./routes/repositoryRoutes.js";
 
 const quietRequestPaths = new Set(["/api/health", "/api/server-log"]);
+const logger = createLogger("apiServer");
 
 function applyCorsHeaders(response) {
   response.setHeader("Access-Control-Allow-Origin", "*");
@@ -33,6 +36,14 @@ async function handleRequest(request, response, config) {
     return;
   }
 
+  if (await handleRepositoryRoute(request, response, requestUrl)) {
+    return;
+  }
+
+  if (await handleGitAnalysisRoute(request, response, requestUrl)) {
+    return;
+  }
+
   if (await handleLogRoute(request, response, requestUrl)) {
     return;
   }
@@ -51,7 +62,7 @@ export function createApiServer(config = serverConfig) {
         return;
       }
 
-      logInfo("API request completed", {
+      logger.info("api.request.completed", {
         method: request.method,
         url: request.url,
         statusCode: response.statusCode,
@@ -62,7 +73,7 @@ export function createApiServer(config = serverConfig) {
     try {
       await handleRequest(request, response, config);
     } catch (error) {
-      logError("API request failed", error, {
+      logger.error("api.request.failed", error, {
         method: request.method,
         url: request.url
       });
@@ -75,7 +86,7 @@ export function startServer(config = serverConfig) {
   const server = createApiServer(config);
 
   server.listen(config.port, config.host, () => {
-    logInfo("ChatGPT Development API started", {
+    logger.info("api.started", {
       host: config.host,
       port: config.port,
       databaseHost: config.database.host,

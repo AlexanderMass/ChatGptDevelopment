@@ -45,6 +45,7 @@ export const serverConfig = {
   host: readSetting("API_HOST", "127.0.0.1"),
   port: Number(readSetting("API_PORT", "3100")),
   projectRoot,
+  repositoryRoot: readSetting("GIT_REPOSITORY_ROOT", "D:\\Alexander"),
   database: {
     host: readSetting("MYSQL_HOST", "127.0.0.1"),
     port: Number(readSetting("MYSQL_PORT", "3306")),
