@@ -1,3 +1,4 @@
+import { findCheckInMetricsByProjectId } from "../database/checkInMetricRepository.js";
 import {
   findProjectById,
   findProjects,
@@ -14,6 +15,16 @@ export async function listProjects() {
 
 export async function getProject(projectId) {
   return findProjectById(projectId);
+}
+
+export async function listProjectCheckInMetrics(projectId) {
+  const project = await findProjectById(projectId);
+
+  if (!project) {
+    return null;
+  }
+
+  return findCheckInMetricsByProjectId(projectId);
 }
 
 export async function createProject(projectInput) {

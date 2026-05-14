@@ -11,7 +11,7 @@
                   <th>Status</th>
                   <th>Projektstart</th>
                   <th>Projektende</th>
-                  <th>Repositories</th>
+                  <th class="project-table__number">Repositories</th>
                 </tr>
               </thead>
               <tbody>
@@ -30,7 +30,7 @@
                   <td>{{ project.status }}</td>
                   <td>{{ formatDate(project.startDate) }}</td>
                   <td>{{ formatDate(project.endDate) }}</td>
-                  <td>{{ project.repositories?.length ?? 0 }}</td>
+                  <td class="project-table__number">{{ project.repositories?.length ?? 0 }}</td>
                 </tr>
               </tbody>
             </table>
@@ -120,9 +120,9 @@
 
         <div v-if="activePresentationTab === 'table'" class="project-presentation-panel">
           <div class="project-presentation-panel__toolbar">
-            <label class="project-selector">
-              <span>Projekt</span>
-              <select>
+            <label class="project-selector project-selector--inline">
+              <span>Projekt:</span>
+              <select v-model="selectedPresentationProjectId">
                 <option
                   v-for="project in projects"
                   :key="project.projectId"
@@ -132,27 +132,65 @@
                 </option>
               </select>
             </label>
+
+            <label class="project-selector project-selector--inline">
+              <span>Repository-Filter:</span>
+              <select v-model="selectedRepositoryFilter">
+                <option value="">Keiner</option>
+                <option
+                  v-for="repository in selectedPresentationRepositories"
+                  :key="repository.repositoryId"
+                  :value="repository.repositoryId"
+                >
+                  {{ repositoryName(repository) }}
+                </option>
+              </select>
+            </label>
+
+            <label class="project-time-toggle">
+              <input v-model="showCheckInTime" type="checkbox" />
+              <span>Uhrzeit</span>
+            </label>
           </div>
 
           <div class="check-in-metric-table-wrap">
             <table class="check-in-metric-table">
               <thead>
                 <tr>
-                  <th>Commit-Datum</th>
+                  <th>Check-in</th>
                   <th>Message Subject</th>
-                  <th>Dateien</th>
-                  <th>Added</th>
-                  <th>Deleted</th>
-                  <th>Net</th>
-                  <th>Churn</th>
-                  <th>Tracked Files</th>
+                  <th class="check-in-metric-table__number">Dateien</th>
+                  <th class="check-in-metric-table__number">Added</th>
+                  <th class="check-in-metric-table__number">Deleted</th>
+                  <th class="check-in-metric-table__number">Net</th>
+                  <th class="check-in-metric-table__number">Churn</th>
+                  <th class="check-in-metric-table__number">Files</th>
                   <th>Merge</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td colspan="9">Check-in-Metriken werden hier im nächsten Ausbauschritt geladen.</td>
+                <tr v-if="isLoadingCheckInMetrics">
+                  <td colspan="9">Check-in-Metriken werden geladen.</td>
                 </tr>
+                <tr v-else-if="!filteredCheckInMetrics.length">
+                  <td colspan="9">Für dieses Projekt sind keine Check-in-Metriken vorhanden.</td>
+                </tr>
+                <template v-else>
+                  <tr
+                    v-for="metric in filteredCheckInMetrics"
+                    :key="metric.checkInMetricId"
+                  >
+                    <td>{{ formatCheckInDate(metric.commitDate) }}</td>
+                    <td>{{ metric.messageSubject }}</td>
+                    <td class="check-in-metric-table__number">{{ metric.changedFileCount }}</td>
+                    <td class="check-in-metric-table__number">{{ metric.addedLineCount }}</td>
+                    <td class="check-in-metric-table__number">{{ metric.deletedLineCount }}</td>
+                    <td class="check-in-metric-table__number">{{ metric.netLineChange }}</td>
+                    <td class="check-in-metric-table__number">{{ metric.churnLineCount }}</td>
+                    <td class="check-in-metric-table__number">{{ metric.trackedFileCount }}</td>
+                    <td>{{ formatBoolean(metric.isMergeCommit) }}</td>
+                  </tr>
+                </template>
               </tbody>
             </table>
           </div>
@@ -172,7 +210,7 @@
 
             <label class="project-selector">
               <span>Projekt</span>
-              <select :disabled="!selectedGraphTypeRequiresProject">
+              <select v-model="selectedPresentationProjectId" :disabled="!selectedGraphTypeRequiresProject">
                 <option
                   v-for="project in projects"
                   :key="project.projectId"
@@ -185,17 +223,15 @@
 
             <label class="project-selector">
               <span>Gruppierung</span>
-              <select>
+              <select v-model="selectedGraphGrouping">
                 <option value="daily">Tägliche Gruppierung</option>
                 <option value="weekly">Wöchentliche Gruppierung</option>
               </select>
             </label>
           </div>
 
-          <div class="graph-presentation-area">
-            <div class="graph-presentation-area__axis graph-presentation-area__axis--y"></div>
-            <div class="graph-presentation-area__axis graph-presentation-area__axis--x"></div>
-            <p>Die grafische Darstellung wird hier im nächsten Ausbauschritt aufgebaut.</p>
+          <div ref="metricChartElement" class="graph-presentation-area">
+            <p v-if="!checkInMetrics.length">Für dieses Projekt sind keine Graphdaten vorhanden.</p>
           </div>
         </div>
       </section>
@@ -276,10 +312,16 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { LineChart } from "echarts/charts";
+import { GridComponent, TooltipComponent } from "echarts/components";
+import { init, use } from "echarts/core";
+import { CanvasRenderer } from "echarts/renderers";
 import MessageBox from "../../shared/components/MessageBox.vue";
 import ProjectDialog from "../components/ProjectDialog.vue";
 import { useProjectAdministration } from "../composables/useProjectAdministration.js";
+
+use([CanvasRenderer, GridComponent, LineChart, TooltipComponent]);
 
 defineProps({
   activeItem: {
@@ -295,9 +337,12 @@ const {
   projectForm,
   repositories,
   projects,
+  checkInMetrics,
   selectedProject,
+  selectedPresentationProjectId,
   isSaving,
   isAnalyzing,
+  isLoadingCheckInMetrics,
   pendingRepositoryRemovalWarning,
   gitAnalysisResult,
   statusMessage,
@@ -315,8 +360,49 @@ const projectContextMenu = ref(null);
 const projectTooltip = ref(null);
 const activePresentationTab = ref("table");
 const selectedGraphType = ref("checkInCount");
+const selectedGraphGrouping = ref("daily");
 const selectedGraphTypeRequiresProject = true;
+const showCheckInTime = ref(false);
+const selectedRepositoryFilter = ref("");
+const metricChartElement = ref(null);
+let metricChart;
 let selectedProjectRowElement;
+
+const selectedPresentationProject = computed(() =>
+  projects.value.find((project) => String(project.projectId) === String(selectedPresentationProjectId.value))
+);
+const selectedPresentationRepositories = computed(() => selectedPresentationProject.value?.repositories ?? []);
+const filteredCheckInMetrics = computed(() => {
+  if (!selectedRepositoryFilter.value) {
+    return checkInMetrics.value;
+  }
+
+  return checkInMetrics.value.filter(
+    (metric) => String(metric.repositoryId) === String(selectedRepositoryFilter.value)
+  );
+});
+const metricChartData = computed(() =>
+  buildMetricChartData(filteredCheckInMetrics.value, selectedGraphType.value, selectedGraphGrouping.value)
+);
+
+watch(selectedPresentationProjectId, () => {
+  selectedRepositoryFilter.value = "";
+});
+
+watch(
+  [activePresentationTab, metricChartData],
+  () => {
+    renderMetricChart();
+  },
+  { deep: true }
+);
+
+window.addEventListener("resize", resizeMetricChart);
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", resizeMetricChart);
+  metricChart?.dispose();
+});
 
 function selectProject(project) {
   selectedProject.value = project;
@@ -425,6 +511,196 @@ function formatDateOnly(value) {
   }
 
   return new Date(value).toLocaleDateString("de-DE");
+}
+
+function formatCheckInDate(value) {
+  if (!value) {
+    return "nicht gesetzt";
+  }
+
+  const date = new Date(value);
+  const dateText = new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+
+  if (showCheckInTime.value) {
+    const timeText = new Intl.DateTimeFormat("de-DE", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }).format(date);
+    return `${dateText}, ${timeText}`;
+  }
+
+  return dateText;
+}
+
+function formatBoolean(value) {
+  return value ? "Ja" : "Nein";
+}
+
+async function renderMetricChart() {
+  if (activePresentationTab.value !== "graph") {
+    metricChart?.dispose();
+    metricChart = undefined;
+    return;
+  }
+
+  await nextTick();
+
+  if (!metricChartElement.value || !checkInMetrics.value.length) {
+    metricChart?.dispose();
+    metricChart = undefined;
+    return;
+  }
+
+  metricChart?.dispose();
+  metricChart = init(metricChartElement.value);
+  metricChart.setOption({
+    animationDuration: 450,
+    grid: {
+      top: 28,
+      right: 26,
+      bottom: 42,
+      left: 54,
+    },
+    tooltip: {
+      trigger: "axis",
+    },
+    xAxis: {
+      type: "category",
+      boundaryGap: false,
+      data: metricChartData.value.labels,
+    },
+    yAxis: {
+      type: "value",
+    },
+    series: [
+      {
+        name: graphTypeLabel(selectedGraphType.value),
+        type: "line",
+        smooth: true,
+        symbolSize: 7,
+        data: metricChartData.value.values,
+        lineStyle: {
+          width: 3,
+        },
+        areaStyle: {
+          opacity: 0.08,
+        },
+      },
+    ],
+  });
+}
+
+function resizeMetricChart() {
+  metricChart?.resize();
+}
+
+function buildMetricChartData(metrics, graphType, grouping) {
+  const buckets = new Map();
+
+  for (const metric of metrics) {
+    const bucketKey = grouping === "weekly"
+      ? weekBucketKey(metric.commitDate)
+      : dayBucketKey(metric.commitDate);
+
+    if (!bucketKey) {
+      continue;
+    }
+
+    const bucket = buckets.get(bucketKey) ?? {
+      label: bucketKey,
+      count: 0,
+      maxTrackedFileCount: 0,
+      netLineChange: 0,
+    };
+
+    bucket.count += 1;
+    bucket.maxTrackedFileCount = Math.max(bucket.maxTrackedFileCount, metric.trackedFileCount ?? 0);
+    bucket.netLineChange += metric.netLineChange ?? 0;
+    buckets.set(bucketKey, bucket);
+  }
+
+  const orderedBuckets = [...buckets.values()].sort((left, right) => left.label.localeCompare(right.label));
+  let cumulativeNetLineChange = 0;
+
+  return {
+    labels: orderedBuckets.map((bucket) => bucket.label),
+    values: orderedBuckets.map((bucket) => {
+      if (graphType === "trackedFileCount") {
+        return bucket.maxTrackedFileCount;
+      }
+
+      if (graphType === "netLineChange") {
+        return bucket.netLineChange;
+      }
+
+      if (graphType === "sourceCodeGrowth") {
+        cumulativeNetLineChange += bucket.netLineChange;
+        return cumulativeNetLineChange;
+      }
+
+      return bucket.count;
+    }),
+  };
+}
+
+function dayBucketKey(value) {
+  const date = parseMetricDate(value);
+
+  if (!date) {
+    return "";
+  }
+
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+}
+
+function weekBucketKey(value) {
+  const date = parseMetricDate(value);
+
+  if (!date) {
+    return "";
+  }
+
+  const weekDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = weekDate.getUTCDay() || 7;
+  weekDate.setUTCDate(weekDate.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(weekDate.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((weekDate - yearStart) / 86400000) + 1) / 7);
+
+  return `${weekDate.getUTCFullYear()}-KW${String(week).padStart(2, "0")}`;
+}
+
+function parseMetricDate(value) {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(String(value).replace(" ", "T"));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function graphTypeLabel(graphType) {
+  if (graphType === "trackedFileCount") {
+    return "Anzahl der Files";
+  }
+
+  if (graphType === "netLineChange") {
+    return "Net Line Change";
+  }
+
+  if (graphType === "sourceCodeGrowth") {
+    return "Sourcecode-Wachstum";
+  }
+
+  return "Check-in-Count";
 }
 
 function repositoryName(repository) {

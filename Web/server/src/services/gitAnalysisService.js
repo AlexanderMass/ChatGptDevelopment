@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import path from "node:path";
 import { promisify } from "node:util";
 import {
+  deleteCheckInMetricsOutsideProjectScope,
   findLastCheckInMetricDate,
   insertCheckInMetrics
 } from "../database/checkInMetricRepository.js";
@@ -49,6 +50,8 @@ export async function analyzeGitData() {
 }
 
 async function analyzeRepository(project, repository) {
+  await deleteCheckInMetricsOutsideProjectScope(repository.repositoryId, project.startDate, project.endDate);
+
   const lastMetricDate = await findLastCheckInMetricDate(repository.repositoryId);
   const commits = await readRelevantCommits(project, repository, lastMetricDate);
   const metrics = [];
@@ -68,15 +71,25 @@ async function analyzeRepository(project, repository) {
 }
 
 async function readRelevantCommits(project, repository, lastMetricDate) {
-  const commitLines = await readGitLines(repository.path, [
+  const projectStart = startOfDay(project.startDate);
+  const projectEnd = endOfDay(project.endDate);
+  const lastMetric = parseStoredDateTime(lastMetricDate);
+  const gitLogArgs = [
     "log",
     "--format=%H%x1f%cI%x1f%s%x1f%P",
     "--reverse",
     "HEAD"
-  ]);
-  const projectStart = startOfDay(project.startDate);
-  const projectEnd = endOfDay(project.endDate);
-  const lastMetric = parseStoredDateTime(lastMetricDate);
+  ];
+
+  if (projectStart) {
+    gitLogArgs.push(`--since=${projectStart.toISOString()}`);
+  }
+
+  if (projectEnd) {
+    gitLogArgs.push(`--until=${projectEnd.toISOString()}`);
+  }
+
+  const commitLines = await readGitLines(repository.path, gitLogArgs);
 
   return commitLines
     .map(parseCommitLine)

@@ -3,10 +3,12 @@ import { sendError, sendJson } from "../http/jsonResponse.js";
 import {
   createProject,
   getProject,
+  listProjectCheckInMetrics,
   listProjects,
   updateProject
 } from "../services/projectService.js";
 
+const checkInMetricsPattern = /^\/api\/projects\/([^/]+)\/check-in-metrics$/;
 const projectDetailPattern = /^\/api\/projects\/([^/]+)$/;
 
 export async function handleProjectRoute(request, response, url) {
@@ -27,6 +29,30 @@ export async function handleProjectRoute(request, response, url) {
     const result = await createProject(projectInput);
     sendJson(response, 201, {
       status: "created",
+      data: result
+    });
+    return true;
+  }
+
+  const checkInMetricsMatch = url.pathname.match(checkInMetricsPattern);
+
+  if (checkInMetricsMatch) {
+    const projectId = decodeURIComponent(checkInMetricsMatch[1]);
+
+    if (request.method !== "GET") {
+      sendError(response, 405, "HTTP-Methode wird fuer Check-in-Metriken nicht unterstuetzt.");
+      return true;
+    }
+
+    const result = await listProjectCheckInMetrics(projectId);
+
+    if (!result) {
+      sendError(response, 404, "Projekt wurde nicht gefunden.");
+      return true;
+    }
+
+    sendJson(response, 200, {
+      status: "ok",
       data: result
     });
     return true;

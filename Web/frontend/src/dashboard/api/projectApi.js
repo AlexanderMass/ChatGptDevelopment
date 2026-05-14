@@ -12,6 +12,12 @@ export async function fetchRepositories() {
   return payload.data ?? [];
 }
 
+export async function fetchProjectCheckInMetrics(projectId) {
+  const response = await fetch(`${apiBaseUrl}/api/projects/${encodeURIComponent(projectId)}/check-in-metrics`);
+  const payload = await readJsonResponse(response);
+  return payload.data ?? [];
+}
+
 export async function createProject(projectInput) {
   const response = await fetch(`${apiBaseUrl}/api/projects`, {
     method: "POST",

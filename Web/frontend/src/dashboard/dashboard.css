@@ -1,7 +1,9 @@
 .dashboard-app {
   display: grid;
   grid-template-rows: minmax(260px, 1fr);
+  height: calc(100vh - 220px);
   min-height: calc(100vh - 220px);
+  overflow: hidden;
 }
 
 .dashboard-app__workspace {
@@ -12,46 +14,53 @@
 
 .dashboard-app__workspace {
   display: grid;
-  gap: 18px;
-  align-content: start;
-  grid-template-rows: minmax(190px, 3fr) minmax(360px, 7fr);
-  padding: 24px;
+  gap: 12px;
+  grid-template-rows: minmax(150px, 3fr) minmax(300px, 7fr);
+  min-height: 0;
+  overflow: hidden;
+  padding: 16px;
   background: var(--panel-strong);
 }
 
 .dashboard-bubble {
   display: grid;
-  gap: 14px;
-  padding: 18px;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 14px;
   border: 1px solid rgba(179, 92, 46, 0.16);
   border-radius: 22px;
   background: linear-gradient(135deg, rgba(255, 247, 237, 0.92), rgba(249, 238, 221, 0.78));
 }
 
 .dashboard-bubble--project-admin {
-  min-height: 210px;
+  min-height: 0;
 }
 
 .dashboard-bubble--project-presentation {
   align-content: start;
-  min-height: 360px;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0;
+  min-height: 0;
 }
 
 .project-presentation-tabs {
   display: flex;
   flex-wrap: wrap;
   align-items: end;
-  gap: 2px;
-  margin: 0 0 -1px 10px;
+  gap: 0;
+  margin: 0;
+  padding-left: 8px;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .project-presentation-tabs__tab {
   min-width: 150px;
-  padding: 0.52rem 1rem 0.48rem;
+  margin: 0;
+  padding: 0.42rem 0.9rem 0.38rem;
   border: 1px solid rgba(179, 92, 46, 0.24);
-  border-bottom-color: rgba(179, 92, 46, 0.18);
+  border-bottom-color: transparent;
   border-radius: 14px 14px 0 0;
   background: rgba(238, 223, 202, 0.72);
   color: var(--muted);
@@ -62,7 +71,7 @@
 }
 
 .project-presentation-tabs__tab--active {
-  padding-top: 0.66rem;
+  padding-top: 0.5rem;
   border-bottom-color: rgba(255, 252, 247, 0.96);
   background: rgba(255, 252, 247, 0.96);
   color: var(--ink);
@@ -71,15 +80,17 @@
 
 .project-presentation-panel {
   display: grid;
-  gap: 14px;
+  gap: 10px;
   grid-template-rows: auto minmax(0, 1fr);
-  min-height: 285px;
+  min-height: 0;
+  overflow: hidden;
   border: 1px solid rgba(179, 92, 46, 0.2);
   border-radius: 18px;
-  border-top-left-radius: 8px;
+  border-top-left-radius: 6px;
+  margin-top: -1px;
   background: rgba(255, 252, 247, 0.96);
   color: var(--muted);
-  padding: 16px;
+  padding: 12px;
 }
 
 .project-presentation-panel p {
@@ -89,8 +100,8 @@
 .project-presentation-panel__toolbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: end;
-  gap: 12px;
+  align-items: center;
+  gap: 8px 14px;
 }
 
 .project-presentation-panel__toolbar--graph {
@@ -106,14 +117,39 @@
   font-weight: 800;
 }
 
+.project-selector--inline {
+  display: flex;
+  align-items: center;
+  min-width: min(360px, 100%);
+}
+
+.project-selector--inline span {
+  flex: 0 0 auto;
+}
+
 .project-selector select {
   width: 100%;
-  padding: 0.42rem 0.55rem;
+  padding: 0.3rem 0.48rem;
   border: 1px solid rgba(179, 92, 46, 0.22);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.72);
   color: var(--ink);
   font: inherit;
+}
+
+.project-time-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.project-time-toggle input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--accent-deep);
 }
 
 .project-selector select:disabled {
@@ -128,9 +164,8 @@
 
 .graph-presentation-area {
   position: relative;
-  display: grid;
+  display: block;
   min-height: 220px;
-  place-items: center;
   overflow: hidden;
   border: 1px solid rgba(179, 92, 46, 0.14);
   border-radius: 14px;
@@ -159,16 +194,23 @@
 }
 
 .graph-presentation-area p {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
+  display: grid;
+  place-items: center;
   margin: 0;
 }
 
 .check-in-metric-table-wrap {
+  position: relative;
   overflow: auto;
+  min-height: 0;
+  max-height: 100%;
   border: 1px solid rgba(179, 92, 46, 0.14);
   border-radius: 14px;
   background: rgba(255, 252, 247, 0.66);
+  isolation: isolate;
 }
 
 .check-in-metric-table {
@@ -179,13 +221,18 @@
 
 .check-in-metric-table th,
 .check-in-metric-table td {
-  padding: 9px 10px;
+  padding: 7px 9px;
   border-bottom: 1px solid rgba(179, 92, 46, 0.12);
+  font-size: 0.78rem;
   text-align: left;
 }
 
 .check-in-metric-table th {
-  background: rgba(179, 92, 46, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgb(242, 226, 207);
+  box-shadow: 0 1px 0 rgba(179, 92, 46, 0.16);
   color: var(--ink);
   font-size: 0.73rem;
   letter-spacing: 0.07em;
@@ -196,19 +243,32 @@
   color: var(--muted);
 }
 
+.check-in-metric-table th.check-in-metric-table__number,
+.check-in-metric-table td.check-in-metric-table__number,
+.project-table th.project-table__number,
+.project-table td.project-table__number {
+  text-align: right;
+}
+
 .project-maintenance-panel {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 220px;
   gap: 18px;
-  align-items: start;
+  height: 100%;
+  min-height: 0;
+  align-items: stretch;
 }
 
 .project-maintenance-panel__table-wrap {
+  position: relative;
   overflow: auto;
+  height: 100%;
+  min-height: 0;
   border: 1px solid rgba(179, 92, 46, 0.16);
   border-radius: 18px;
   background: rgba(255, 252, 247, 0.72);
+  isolation: isolate;
 }
 
 .project-table {
@@ -218,16 +278,21 @@
 
 .project-table th,
 .project-table td {
-  padding: 10px 12px;
+  padding: 7px 9px;
   border-bottom: 1px solid rgba(179, 92, 46, 0.12);
+  font-size: 0.78rem;
   text-align: left;
 }
 
 .project-table th {
-  background: rgba(179, 92, 46, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgb(242, 226, 207);
+  box-shadow: 0 1px 0 rgba(179, 92, 46, 0.16);
   color: var(--ink);
-  font-size: 0.76rem;
-  letter-spacing: 0.08em;
+  font-size: 0.73rem;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 

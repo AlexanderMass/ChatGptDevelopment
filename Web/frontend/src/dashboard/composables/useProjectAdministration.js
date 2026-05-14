@@ -1,6 +1,7 @@
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import {
   createProject,
+  fetchProjectCheckInMetrics,
   fetchProjects,
   fetchRepositories,
   runGitAnalysis,
@@ -31,9 +32,12 @@ export function useProjectAdministration() {
   const dialogMode = ref(null);
   const projects = ref([]);
   const repositories = ref([]);
+  const checkInMetrics = ref([]);
   const selectedProject = ref(null);
+  const selectedPresentationProjectId = ref("");
   const isSaving = ref(false);
   const isAnalyzing = ref(false);
+  const isLoadingCheckInMetrics = ref(false);
   const pendingRepositoryRemovalWarning = ref(false);
   const gitAnalysisResult = ref(null);
   const statusMessage = ref("");
@@ -46,10 +50,15 @@ export function useProjectAdministration() {
   onMounted(loadProjects);
   onMounted(loadRepositories);
 
+  watch(selectedPresentationProjectId, (projectId) => {
+    loadCheckInMetrics(projectId);
+  });
+
   async function loadProjects() {
     try {
       errorMessage.value = "";
       projects.value = await fetchProjects();
+      ensureSelectedPresentationProject();
     } catch (error) {
       errorMessage.value = error.message;
     }
@@ -61,6 +70,41 @@ export function useProjectAdministration() {
       repositories.value = await fetchRepositories();
     } catch (error) {
       errorMessage.value = error.message;
+    }
+  }
+
+  function ensureSelectedPresentationProject() {
+    if (!projects.value.length) {
+      selectedPresentationProjectId.value = "";
+      checkInMetrics.value = [];
+      return;
+    }
+
+    const projectExists = projects.value.some(
+      (project) => String(project.projectId) === String(selectedPresentationProjectId.value)
+    );
+
+    if (!projectExists) {
+      selectedPresentationProjectId.value = String(projects.value[0].projectId);
+    }
+  }
+
+  async function loadCheckInMetrics(projectId = selectedPresentationProjectId.value) {
+    if (!projectId) {
+      checkInMetrics.value = [];
+      return;
+    }
+
+    isLoadingCheckInMetrics.value = true;
+    errorMessage.value = "";
+
+    try {
+      checkInMetrics.value = await fetchProjectCheckInMetrics(projectId);
+    } catch (error) {
+      errorMessage.value = error.message;
+      checkInMetrics.value = [];
+    } finally {
+      isLoadingCheckInMetrics.value = false;
     }
   }
 
@@ -102,6 +146,7 @@ export function useProjectAdministration() {
         });
 
         projects.value = [createdProject, ...projects.value];
+        selectedPresentationProjectId.value = String(createdProject.projectId);
         statusMessage.value = `Projekt "${createdProject.name}" wurde angelegt.`;
       } else if (selectedProject.value) {
         const updatedProject = await updateProject(selectedProject.value.projectId, {
@@ -114,6 +159,7 @@ export function useProjectAdministration() {
         projects.value = projects.value.map((project) =>
           project.projectId === updatedProject.projectId ? updatedProject : project,
         );
+        ensureSelectedPresentationProject();
         statusMessage.value = `Projekt "${updatedProject.name}" wurde aktualisiert.`;
       }
 
@@ -133,8 +179,8 @@ export function useProjectAdministration() {
 
     try {
       gitAnalysisResult.value = await runGitAnalysis();
-      statusMessage.value = "Git-Datenanalyse wurde abgeschlossen.";
       await loadProjects();
+      await loadCheckInMetrics();
     } catch (error) {
       errorMessage.value = error.message;
     } finally {
@@ -153,10 +199,13 @@ export function useProjectAdministration() {
     projectForm,
     repositories,
     projects,
+    checkInMetrics,
     lastProject,
     selectedProject,
+    selectedPresentationProjectId,
     isSaving,
     isAnalyzing,
+    isLoadingCheckInMetrics,
     pendingRepositoryRemovalWarning,
     gitAnalysisResult,
     statusMessage,
@@ -167,6 +216,7 @@ export function useProjectAdministration() {
     confirmDialog,
     analyzeGitData,
     closeGitAnalysisResult,
+    loadCheckInMetrics,
     updateProjectForm,
   };
 }

@@ -1,5 +1,63 @@
 import { getConnectionPool } from "./mysqlConnection.js";
 
+export async function findCheckInMetricsByProjectId(projectId) {
+  const [rows] = await getConnectionPool().execute(
+    `
+      SELECT
+        p.projectId,
+        p.name AS projectName,
+        r.repositoryId,
+        r.path AS repositoryPath,
+        m.checkInMetricId,
+        m.commitHash,
+        m.commitDate,
+        m.messageSubject,
+        m.changedFileCount,
+        m.addedLineCount,
+        m.deletedLineCount,
+        m.netLineChange,
+        m.churnLineCount,
+        m.trackedFileCount,
+        m.isMergeCommit
+      FROM chat_gpt_project p
+      INNER JOIN git_repository r
+        ON r.projectId = p.projectId
+      INNER JOIN check_in_metric m
+        ON m.repositoryId = r.repositoryId
+      WHERE p.projectId = :projectId
+        AND (
+          p.startDate IS NULL
+          OR m.commitDate >= TIMESTAMP(p.startDate, '00:00:00')
+        )
+        AND m.commitDate <= CASE
+          WHEN p.endDate IS NULL THEN NOW()
+          ELSE TIMESTAMP(p.endDate, '23:59:59')
+        END
+      ORDER BY m.commitDate DESC, m.checkInMetricId DESC
+    `,
+    { projectId }
+  );
+
+  return rows.map((row) => ({
+    projectId: row.projectId,
+    projectName: row.projectName,
+    repositoryId: row.repositoryId,
+    repositoryName: repositoryName(row.repositoryPath),
+    repositoryPath: row.repositoryPath,
+    checkInMetricId: row.checkInMetricId,
+    commitHash: row.commitHash,
+    commitDate: row.commitDate,
+    messageSubject: row.messageSubject ?? "",
+    changedFileCount: row.changedFileCount,
+    addedLineCount: row.addedLineCount,
+    deletedLineCount: row.deletedLineCount,
+    netLineChange: row.netLineChange,
+    churnLineCount: row.churnLineCount,
+    trackedFileCount: row.trackedFileCount,
+    isMergeCommit: Boolean(row.isMergeCommit)
+  }));
+}
+
 export async function findLastCheckInMetricDate(repositoryId) {
   const [rows] = await getConnectionPool().execute(
     `
@@ -11,6 +69,30 @@ export async function findLastCheckInMetricDate(repositoryId) {
   );
 
   return rows[0]?.lastMetricDate ?? null;
+}
+
+export async function deleteCheckInMetricsOutsideProjectScope(repositoryId, projectStartDate, projectEndDate) {
+  await getConnectionPool().execute(
+    `
+      DELETE FROM check_in_metric
+      WHERE repositoryId = :repositoryId
+        AND (
+          (
+            :projectStartDate IS NOT NULL
+            AND commitDate < TIMESTAMP(:projectStartDate, '00:00:00')
+          )
+          OR (
+            :projectEndDate IS NOT NULL
+            AND commitDate > TIMESTAMP(:projectEndDate, '23:59:59')
+          )
+        )
+    `,
+    {
+      repositoryId,
+      projectStartDate: projectStartDate || null,
+      projectEndDate: projectEndDate || null
+    }
+  );
 }
 
 export async function insertCheckInMetrics(metrics) {
@@ -53,4 +135,8 @@ export async function insertCheckInMetrics(metrics) {
   }
 
   return insertedCount;
+}
+
+function repositoryName(repositoryPath) {
+  return String(repositoryPath ?? "").split(/[\\/]/).pop() || "";
 }
