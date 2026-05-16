@@ -35,7 +35,7 @@ Für jedes Projekt sollte das Datenbankschema als SQL-Datei im Repository dokume
 Typische Ablage:
 
 ```text
-Db/
+Sql/
   create_schema.sql
 ```
 
@@ -136,7 +136,7 @@ Für kleine lokale Projekte kann ein einzelnes `create_schema.sql` zunächst aus
 Wenn ein Projekt größer wird, können Migrationen sinnvoll werden:
 
 ```text
-Db/
+Sql/
   migrations/
     001_create_schema.sql
     002_add_project_status.sql
@@ -149,4 +149,3 @@ Migrationen sind besonders dann hilfreich, wenn mehrere Datenbankstände nachvol
 MySQL wird in diesem Arbeitsmodell als lokale relationale Datenbank für strukturierte Projektinformationen betrachtet.
 
 Die Datenbanklogik soll über eine Serverkomponente wie Node.js gekapselt werden. SQL-Skripte werden versioniert, Zugangsdaten nicht. Dadurch bleiben Datenmodell, Anwendung und Sicherheitsgrenzen nachvollziehbar getrennt.
-

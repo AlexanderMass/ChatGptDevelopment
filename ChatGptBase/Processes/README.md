@@ -6,11 +6,13 @@ Die Prozessdateien beschreiben Arbeitsweisen, die in mehreren Projekten instanzi
 
 ## Vorhandene Prozesse
 
+- `AnalyseUml.md`: Modellgetriebene Analyse mit Use Cases, Designobjekten und Datenmodellierung
 - `AiBrainStorming.md`: Pingpong-artiger Brainstorming-Prozess zwischen Mensch und KI
 - `AiVorgehensModelInternet.md`: Beobachtete Vorgehensmodelle und Diskussionen zu AI-gestützter Softwarearbeit
 - `DokumentenArbeit.md`: Strukturierte Dokumentenarbeit mit ChatGPT und Codex
 - `EntwicklungsProzessSicht.md`: Prozessuale Sicht auf Epics, Stories, Status und Fortschritt
-- `MyAiScrum.md`: Persönliches Scrum-Derivat für Mensch-KI-Arbeit mit Epics und Stories als Kernelementen
+- `MyAiScrum.md`: Persönliches Scrum-Derivat für Mensch-KI-Arbeit mit Epics, Stories und optionalen Tasks
+- `NeuesProjekt.md`: Startmuster für neue Projekte mit Grundordnern, Kontextstruktur und Mensch-KI-Zusammenarbeit
 
 ## Leitidee
 

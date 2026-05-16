@@ -2,7 +2,7 @@
 
 ## Zugehoeriger Arbeitsordner
 
-`D:\Alexander\Python\ChatGptDevelopment\Db`
+`D:\Alexander\Python\ChatGptDevelopment\Sql`
 
 ## Ziel
 
