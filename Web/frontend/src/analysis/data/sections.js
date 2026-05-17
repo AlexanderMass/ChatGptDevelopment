@@ -206,8 +206,9 @@ export const useCases = [
           {
             title: "Zu ermittelnde Repository-Kennzahlen",
             paragraphs: [
-              "Für jedes zugeordnete Repository werden die verdichteten Repository-Kennzahlen `lastCheckInDate` und `checkInCount` ermittelt und in `git_repository` gespeichert.",
+              "Für jedes zugeordnete Repository werden die verdichteten Repository-Kennzahlen `lastCheckInDate`, `checkInCount` und `hasChatGptContext` ermittelt und in `git_repository` gespeichert.",
               "`firstCheckInDate` wird bereits im Use Case Neue Projekte anlegen bei der initialen Repository-Datenermittlung bestimmt.",
+              "`hasChatGptContext` wird zusätzlich beim Zuweisen eines Repositories gesetzt und bei der Git-Datenanalyse erneut aktualisiert.",
             ],
           },
           {
@@ -460,6 +461,26 @@ export const sections = [
     ],
     nextStep:
       "Ein sinnvoller nächster Ausbau ist eine erste Statusübersicht mit Beispielprojekten, Sitzungen und Aktivitätszählern.",
+  },
+  {
+    id: "cockpit",
+    label: "Cockpit",
+    meta: "Applikation",
+    eyebrow: "Applikation",
+    title: "Cockpit",
+    lead:
+      "Eigenständige Applikation zur projektübergreifenden Introspektion der verwalteten ChatGPT-Development-Projekte.",
+    chips: [],
+    focusTitle: "Projektintrospektion",
+    focusText:
+      "Das Cockpit soll Projekte, ihre Kontextordner und später die darin enthaltenen Markdown-Artefakte sichtbar machen.",
+    focusPoints: [
+      "Projekte mit ChatGPT-Context-Ordner auswählen",
+      "Directory Tree aus dem persistierten Git-Stand anzeigen",
+      "Textdateien im File-Präsentationspanel darstellen",
+    ],
+    nextStep:
+      "Als nächstes wird die Serveranbindung für Projekt- und Git-File-Informationen aufgebaut.",
   },
   {
     id: "analysis",
@@ -785,6 +806,7 @@ export const sections = [
           "firstCheckInDate",
           "lastCheckInDate",
           "checkInCount",
+          "hasChatGptContext",
         ],
       },
       {
@@ -829,7 +851,8 @@ export const sections = [
             paragraphs: [
               "git_repository beschreibt ein Git-Repository, das einem ChatGPT-Projekt zugeordnet ist. Ein Projekt kann ein oder mehrere Repositories besitzen, weil technische Artefakte und Git-Historie nicht zwingend in genau einem Repository liegen müssen.",
               "Die Foreign-Key-Beziehung `git_repository.projectId` verweist auf `chat_gpt_project.projectId`. Dadurch wird jedes Repository einem verwalteten ChatGPT-Projekt zugeordnet. Wird ein Projekt gelöscht, werden die zugeordneten Git-Repositories über `ON DELETE CASCADE` automatisch entfernt.",
-              "Repository-weite Kennzahlen wie `firstCheckInDate`, `lastCheckInDate` und `checkInCount` werden direkt bei git_repository geführt. Sie beschreiben verdichtete Historienmerkmale des Repositories und müssen nicht als einzelne Check-in-Metriken modelliert werden.",
+              "Repository-weite Kennzahlen wie `firstCheckInDate`, `lastCheckInDate`, `checkInCount` und `hasChatGptContext` werden direkt bei git_repository geführt. Sie beschreiben verdichtete Historienmerkmale des Repositories und müssen nicht als einzelne Check-in-Metriken modelliert werden.",
+              "`hasChatGptContext` markiert, ob im persistierten Git-Stand ein Kontextordner wie `ChatGptContext` vorhanden ist. Das Flag wird beim Speichern der Repository-Zuordnung initial gesetzt und bei der Git-Datenanalyse aktualisiert.",
             ],
           },
           {
@@ -866,6 +889,7 @@ CREATE TABLE git_repository (
   firstCheckInDate DATETIME NULL,
   lastCheckInDate DATETIME NULL,
   checkInCount INT NOT NULL DEFAULT 0,
+  hasChatGptContext BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (repositoryId),
   CONSTRAINT fk_git_repository_project
     FOREIGN KEY (projectId)

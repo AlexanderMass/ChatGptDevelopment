@@ -51,11 +51,15 @@ const rootSections = computed(() => {
         ]
       : undefined,
   };
+  const cockpitSection = sections.find((section) => section.id === "cockpit");
 
   return [
     dashboardSection,
-    ...sections.filter((section) => section.id !== "dashboard" && !childIds.has(section.id)),
-  ];
+    cockpitSection,
+    ...sections.filter((section) =>
+      section.id !== "dashboard" && section.id !== "cockpit" && !childIds.has(section.id),
+    ),
+  ].filter(Boolean);
 });
 const expandedNodes = ref(new Set());
 

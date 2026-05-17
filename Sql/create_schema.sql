@@ -30,6 +30,7 @@ CREATE TABLE git_repository (
   firstCheckInDate DATETIME NULL,
   lastCheckInDate DATETIME NULL,
   checkInCount INT NOT NULL DEFAULT 0,
+  hasChatGptContext BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (repositoryId),
   CONSTRAINT fk_git_repository_project
     FOREIGN KEY (projectId)

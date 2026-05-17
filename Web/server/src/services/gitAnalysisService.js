@@ -6,8 +6,9 @@ import {
   findLastCheckInMetricDate,
   insertCheckInMetrics
 } from "../database/checkInMetricRepository.js";
-import { findProjects } from "../database/projectRepository.js";
+import { findProjects, updateRepositoryContextFlag } from "../database/projectRepository.js";
 import { createLogger } from "../logging/logger.js";
+import { hasChatGptContext } from "./repositoryContextService.js";
 
 const execFileAsync = promisify(execFile);
 const logger = createLogger("gitAnalysisService");
@@ -50,6 +51,8 @@ export async function analyzeGitData() {
 }
 
 async function analyzeRepository(project, repository) {
+  const repositoryHasChatGptContext = await hasChatGptContext(repository.path);
+  await updateRepositoryContextFlag(repository.repositoryId, repositoryHasChatGptContext);
   await deleteCheckInMetricsOutsideProjectScope(repository.repositoryId, project.startDate, project.endDate);
 
   const lastMetricDate = await findLastCheckInMetricDate(repository.repositoryId);
@@ -66,6 +69,7 @@ async function analyzeRepository(project, repository) {
     repositoryId: repository.repositoryId,
     name: repositoryName(repository),
     path: repository.path,
+    hasChatGptContext: repositoryHasChatGptContext,
     newCheckInMetrics: insertedCount
   };
 }

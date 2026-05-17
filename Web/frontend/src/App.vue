@@ -15,6 +15,7 @@
     </template>
 
     <DashboardApplication v-if="activeSection === 'dashboard'" :active-item="activeItem" />
+    <CockpitApplication v-else-if="activeSection === 'cockpit'" />
     <ServerLogView v-else-if="activeSection === 'server-log'" />
     <AnalysisWorkspace
       v-else
@@ -34,6 +35,7 @@ import { sections, useCases } from "./analysis/data/sections.js";
 import AppShell from "./app-shell/components/AppShell.vue";
 import NavigationTree from "./app-shell/components/NavigationTree.vue";
 import ServerLogView from "./app-shell/components/ServerLogView.vue";
+import CockpitApplication from "./cockpit/views/CockpitApplication.vue";
 import DashboardApplication from "./dashboard/views/DashboardApplication.vue";
 import { fetchServerStatus } from "./shared/api/serverStatusApi.js";
 

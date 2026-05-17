@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "check": "node --check src/server.js && node --check src/config/serverConfig.js && node --check src/database/checkInMetricRepository.js && node --check src/database/mysqlConnection.js && node --check src/database/projectRepository.js && node --check src/http/jsonResponse.js && node --check src/http/requestBody.js && node --check src/logging/logger.js && node --check src/routes/gitAnalysisRoutes.js && node --check src/routes/healthRoutes.js && node --check src/routes/logRoutes.js && node --check src/routes/projectRoutes.js && node --check src/routes/repositoryRoutes.js && node --check src/services/gitAnalysisService.js && node --check src/services/projectService.js && node --check src/services/repositoryDiscoveryService.js"
+    "migrate:context-flag": "node scripts/applyHasChatGptContextMigration.js",
+    "check": "node --check src/server.js && node --check src/config/serverConfig.js && node --check src/database/checkInMetricRepository.js && node --check src/database/mysqlConnection.js && node --check src/database/projectRepository.js && node --check src/http/jsonResponse.js && node --check src/http/requestBody.js && node --check src/logging/logger.js && node --check src/routes/cockpitRoutes.js && node --check src/routes/gitAnalysisRoutes.js && node --check src/routes/healthRoutes.js && node --check src/routes/logRoutes.js && node --check src/routes/projectRoutes.js && node --check src/routes/repositoryRoutes.js && node --check src/services/cockpitService.js && node --check src/services/gitAnalysisService.js && node --check src/services/projectService.js && node --check src/services/repositoryContextService.js && node --check src/services/repositoryDiscoveryService.js && node --check scripts/applyHasChatGptContextMigration.js"
   },
   "dependencies": {
     "mysql2": "^3.22.3"

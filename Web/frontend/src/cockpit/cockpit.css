@@ -1,0 +1,197 @@
+.cockpit-app {
+  display: grid;
+  grid-template-rows: minmax(260px, 1fr);
+  height: calc(100vh - 220px);
+  min-height: calc(100vh - 220px);
+  overflow: hidden;
+}
+
+.cockpit-app__workspace {
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid rgba(179, 92, 46, 0.18);
+  border-radius: 24px;
+  background: var(--panel-strong);
+  box-shadow: var(--shadow);
+}
+
+.cockpit-bubble {
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+  padding: 14px;
+  border: 1px solid rgba(179, 92, 46, 0.16);
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255, 247, 237, 0.92), rgba(249, 238, 221, 0.78));
+}
+
+.cockpit-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+  min-height: 0;
+}
+
+.cockpit-panel__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+}
+
+.cockpit-project-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: min(460px, 100%);
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.cockpit-project-selector span {
+  flex: 0 0 auto;
+}
+
+.cockpit-project-selector select {
+  width: 100%;
+  padding: 0.3rem 0.48rem;
+  border: 1px solid rgba(179, 92, 46, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+  font: inherit;
+}
+
+.cockpit-panel__error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.cockpit-panel__status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.cockpit-panel__body {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.32fr) minmax(0, 0.68fr);
+  gap: 12px;
+  min-height: 0;
+}
+
+.cockpit-panel__tree,
+.cockpit-panel__file {
+  min-height: 0;
+  border: 1px solid rgba(179, 92, 46, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 252, 247, 0.72);
+  overflow: auto;
+}
+
+.cockpit-panel__tree {
+  padding: 10px;
+}
+
+.cockpit-panel__file {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.cockpit-tree {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cockpit-tree--nested {
+  margin-left: 12px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(179, 92, 46, 0.16);
+}
+
+.cockpit-tree__item {
+  min-width: 0;
+}
+
+.cockpit-tree__button {
+  width: 100%;
+  padding: 0.18rem 0.34rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.cockpit-tree__button:disabled {
+  color: var(--muted);
+}
+
+.cockpit-tree__item--repository > .cockpit-tree__button {
+  color: var(--accent-strong);
+  font-weight: 900;
+}
+
+.cockpit-tree__item--directory > .cockpit-tree__button {
+  font-weight: 850;
+}
+
+.cockpit-tree__item--file > .cockpit-tree__button {
+  cursor: pointer;
+}
+
+.cockpit-tree__item--file > .cockpit-tree__button:hover,
+.cockpit-tree__button--active {
+  border-color: rgba(179, 92, 46, 0.2);
+  background: rgba(179, 92, 46, 0.1);
+}
+
+.cockpit-file__header {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(179, 92, 46, 0.14);
+  color: var(--ink);
+}
+
+.cockpit-file__header span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.cockpit-file__content {
+  min-height: 0;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  color: var(--ink);
+  font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.cockpit-empty-state {
+  margin: 0;
+  padding: 12px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+@media (max-width: 980px) {
+  .cockpit-panel__body {
+    grid-template-columns: 1fr;
+  }
+}

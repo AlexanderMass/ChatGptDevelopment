@@ -6,6 +6,7 @@ import {
   updateProjectRecord
 } from "../database/projectRepository.js";
 import { createLogger } from "../logging/logger.js";
+import { hasChatGptContext } from "./repositoryContextService.js";
 
 const logger = createLogger("projectService");
 
@@ -28,7 +29,7 @@ export async function listProjectCheckInMetrics(projectId) {
 }
 
 export async function createProject(projectInput) {
-  const project = normalizeNewProject(projectInput);
+  const project = await enrichProjectRepositories(normalizeNewProject(projectInput));
 
   logger.info("project.create.normalized", {
     project
@@ -38,7 +39,7 @@ export async function createProject(projectInput) {
 }
 
 export async function updateProject(projectId, projectInput) {
-  const project = normalizeExistingProject(projectInput);
+  const project = await enrichProjectRepositories(normalizeExistingProject(projectInput));
 
   logger.info("project.update.normalized", {
     projectId,
@@ -91,8 +92,23 @@ function normalizeRepositories(repositories) {
       remoteUrl: String(repository.remoteUrl ?? "").trim(),
       firstCheckInDate: normalizeDateTime(repository.firstCheckInDate),
       lastCommitDate: normalizeDateTime(repository.lastCommitDate),
-      checkInCount: Number(repository.checkInCount ?? 0)
+      checkInCount: Number(repository.checkInCount ?? 0),
+      hasChatGptContext: Boolean(repository.hasChatGptContext)
     }));
+}
+
+async function enrichProjectRepositories(project) {
+  const repositories = await Promise.all(
+    project.repositories.map(async (repository) => ({
+      ...repository,
+      hasChatGptContext: await hasChatGptContext(repository.path)
+    }))
+  );
+
+  return {
+    ...project,
+    repositories
+  };
 }
 
 function normalizeDateTime(value) {

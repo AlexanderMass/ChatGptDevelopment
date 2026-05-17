@@ -62,8 +62,11 @@ Allgemeine repository-weite Kennzahlen werden direkt auf `git_repository` gefüh
 - `firstCheckInDate`
 - `lastCheckInDate`
 - `checkInCount`
+- `hasChatGptContext`
 
-Diese Werte können beim Use Case `Git-Daten analysieren` aus Git ermittelt und als verdichtete Repository-Merkmale gespeichert werden. Der aktuelle File-Bestand wird dagegen nicht hier gespeichert, sondern über `check_in_metric.trackedFileCount` historisiert. Flüchtige Arbeitsbaumwerte wie `untrackedFileCount` oder `modifiedFileCount` gehören zunächst nicht in den Kernentwurf.
+Diese Werte können aus Git ermittelt und als verdichtete Repository-Merkmale gespeichert werden. `hasChatGptContext` ist ein gepflegtes Boolean-Flag, das ausdrückt, ob im persistierten Git-Stand ein Kontextordner wie `ChatGptContext` vorhanden ist. Das Flag wird beim Speichern der Repository-Zuordnung initial gesetzt und beim Use Case `Git-Daten analysieren` erneut aktualisiert. Dadurch wird auch erkannt, wenn ein Kontextordner später gelöscht wurde.
+
+Der aktuelle File-Bestand wird dagegen nicht hier gespeichert, sondern über `check_in_metric.trackedFileCount` historisiert. Flüchtige Arbeitsbaumwerte wie `untrackedFileCount` oder `modifiedFileCount` gehören zunächst nicht in den Kernentwurf.
 
 ## Check-in-Metriken
 

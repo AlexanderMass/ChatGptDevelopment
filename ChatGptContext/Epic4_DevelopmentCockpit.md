@@ -60,7 +60,9 @@ Das Cockpit steht damit in enger Beziehung zu Epic 3. Epic 3 erarbeitet die meth
 
 Das `Development Cockpit` soll Kontextordner anderer ChatGPT-Development-Projekte dynamisch über Serverfunktionen lesen.
 
-Ausgangspunkt sind die bereits in der Datenbank bekannten Projekte und ihre zugeordneten Git-Repositories. Für jedes Repository kann der lokale Repository-Pfad verwendet werden, um auf oberster Ebene nach einem Kontextordner wie `ChatGptContext` zu suchen. Wird ein solcher Ordner gefunden, kann das Cockpit dessen Struktur und Markdown-Dateien anzeigen.
+Ausgangspunkt sind die bereits in der Datenbank bekannten Projekte und ihre zugeordneten Git-Repositories. Auf `git_repository` wird dafür das Boolean-Flag `hasChatGptContext` gepflegt. Es wird beim Speichern einer Repository-Zuordnung initial aus dem Git-Stand ermittelt und beim Use Case `Git-Daten analysieren` erneut aktualisiert. Wird ein Kontextordner später entfernt, verliert das Repository dadurch auch seine Cockpit-Relevanz.
+
+Der Cockpit-Projektfilter kann damit direkt über die Datenbank laufen: Ein Projekt wird angezeigt, wenn mindestens eines seiner zugeordneten Repositories `hasChatGptContext = 1` besitzt. Die konkrete Struktur und die Markdown-Dateien des Kontextordners werden anschließend über den bekannten lokalen Repository-Pfad gelesen.
 
 Das Cockpit wird damit als Projektintrospektion verstanden. Es beobachtet Projekte von außen, indem es die bekannten Projekt- und Repository-Daten nutzt und die standardisierte Directory-Struktur der Projekte auswertet. Wenn Projekte der Struktur aus `NeuesProjekt.md` folgen, kann das Cockpit Projektkontext, AiScrum-Struktur, Epics, Stories und Ressourcenbezüge sichtbar machen.
 
@@ -68,7 +70,7 @@ Der Zugriff auf Kontextdateien erfolgt nicht über eine Kopie der Dokumente und 
 
 Mögliche Serverfunktionen:
 
-- `GET /api/development-cockpit/projects`: liefert Projekte, Repositories und gefundene Kontextordner.
+- `GET /api/cockpit/projects`: liefert Projekte, deren Repositories einen erkannten Kontextordner besitzen.
 - `GET /api/development-cockpit/repositories/:repositoryId/context-files`: liefert die Dateien eines Kontextordners.
 - `GET /api/development-cockpit/repositories/:repositoryId/context-files/:fileName`: liefert den Inhalt einer konkreten Markdown-Datei.
 
@@ -85,4 +87,3 @@ Der Serverzugriff soll auf bekannte Repository-Pfade beschränkt bleiben. Dadurc
 - Offen: In der Development-Cockpit-Analyse muss geklärt werden, welche Projekte und Kontextordner initial angebunden werden.
 - Offen: Es muss definiert werden, welche Qualitätsanker für Kontextdateien relevant sind.
 - Offen: Die technische Umsetzung als neue Webapplikation muss noch modelliert werden.
-

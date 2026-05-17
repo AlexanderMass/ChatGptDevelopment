@@ -1,8 +1,8 @@
 import http from "node:http";
-import { pathToFileURL } from "node:url";
 import { serverConfig } from "./config/serverConfig.js";
 import { sendError, sendJson } from "./http/jsonResponse.js";
 import { createLogger, getLogFilePath } from "./logging/logger.js";
+import { handleCockpitRoute } from "./routes/cockpitRoutes.js";
 import { handleGitAnalysisRoute } from "./routes/gitAnalysisRoutes.js";
 import { handleHealthRoute } from "./routes/healthRoutes.js";
 import { handleLogRoute } from "./routes/logRoutes.js";
@@ -37,6 +37,10 @@ async function handleRequest(request, response, config) {
   }
 
   if (await handleRepositoryRoute(request, response, requestUrl)) {
+    return;
+  }
+
+  if (await handleCockpitRoute(request, response, requestUrl)) {
     return;
   }
 
@@ -100,6 +104,6 @@ export function startServer(config = serverConfig) {
   return server;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1]?.replace(/\\/g, "/").endsWith("/server.js")) {
   startServer();
 }
