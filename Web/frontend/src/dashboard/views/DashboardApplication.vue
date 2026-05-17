@@ -568,6 +568,15 @@ async function renderMetricChart() {
     },
     tooltip: {
       trigger: "axis",
+      appendToBody: true,
+      className: "metric-chart-tooltip",
+      confine: true,
+      formatter: formatMetricChartTooltip,
+      position(point, _params, _dom, _rect, size) {
+        const tooltipWidth = size.contentSize[0];
+        const tooltipHeight = size.contentSize[1];
+        return [point[0] - tooltipWidth / 2, point[1] - tooltipHeight - 12];
+      },
     },
     xAxis: {
       type: "category",
@@ -616,36 +625,142 @@ function buildMetricChartData(metrics, graphType, grouping) {
       count: 0,
       maxTrackedFileCount: 0,
       netLineChange: 0,
+      metrics: [],
     };
 
     bucket.count += 1;
     bucket.maxTrackedFileCount = Math.max(bucket.maxTrackedFileCount, metric.trackedFileCount ?? 0);
     bucket.netLineChange += metric.netLineChange ?? 0;
+    bucket.metrics.push(metric);
     buckets.set(bucketKey, bucket);
   }
 
   const orderedBuckets = [...buckets.values()].sort((left, right) => left.label.localeCompare(right.label));
   let cumulativeNetLineChange = 0;
+  const values = [];
+
+  for (const bucket of orderedBuckets) {
+    bucket.metrics.sort((left, right) => String(left.commitDate).localeCompare(String(right.commitDate)));
+
+    if (graphType === "trackedFileCount") {
+      values.push(bucket.maxTrackedFileCount);
+      continue;
+    }
+
+    if (graphType === "netLineChange") {
+      values.push(bucket.netLineChange);
+      continue;
+    }
+
+    if (graphType === "sourceCodeGrowth") {
+      cumulativeNetLineChange += bucket.netLineChange;
+      values.push(cumulativeNetLineChange);
+      continue;
+    }
+
+    values.push(bucket.count);
+  }
 
   return {
     labels: orderedBuckets.map((bucket) => bucket.label),
-    values: orderedBuckets.map((bucket) => {
-      if (graphType === "trackedFileCount") {
-        return bucket.maxTrackedFileCount;
-      }
-
-      if (graphType === "netLineChange") {
-        return bucket.netLineChange;
-      }
-
-      if (graphType === "sourceCodeGrowth") {
-        cumulativeNetLineChange += bucket.netLineChange;
-        return cumulativeNetLineChange;
-      }
-
-      return bucket.count;
-    }),
+    values,
+    buckets: orderedBuckets,
   };
+}
+
+function formatMetricChartTooltip(params) {
+  const point = Array.isArray(params) ? params[0] : params;
+  const bucket = metricChartData.value.buckets?.[point?.dataIndex];
+
+  if (!bucket) {
+    return "";
+  }
+
+  const graphType = selectedGraphType.value;
+  const graphLabel = graphTypeLabel(graphType);
+  const totalText = metricTooltipTotalText(bucket, graphType, point?.value);
+  const rows = bucket.metrics
+    .map((metric) => metricTooltipRow(metric, graphType))
+    .join("");
+
+  return `
+    <section class="metric-chart-tooltip__content">
+      <header class="metric-chart-tooltip__header">
+        <strong>${escapeHtml(bucket.label)}: ${escapeHtml(graphLabel)} ${escapeHtml(totalText)}</strong>
+      </header>
+      <div class="metric-chart-tooltip__list">
+        ${rows || "<div class=\"metric-chart-tooltip__empty\">Keine Check-ins</div>"}
+      </div>
+    </section>
+  `;
+}
+
+function metricTooltipTotalText(bucket, graphType, value) {
+  if (graphType === "trackedFileCount") {
+    return `${value ?? bucket.maxTrackedFileCount} Files`;
+  }
+
+  if (graphType === "netLineChange") {
+    return formatSignedNumber(value ?? bucket.netLineChange);
+  }
+
+  if (graphType === "sourceCodeGrowth") {
+    return `${formatSignedNumber(value ?? 0)} kumuliert`;
+  }
+
+  return `${bucket.count} Check-ins`;
+}
+
+function metricTooltipRow(metric, graphType) {
+  const subject = metric.messageSubject || "(ohne Message)";
+  const time = formatMetricTooltipTime(metric.commitDate);
+  const detail = metricTooltipDetail(metric, graphType);
+
+  return `
+    <article class="metric-chart-tooltip__row">
+      <span>${escapeHtml(time)}: <strong>${escapeHtml(subject)}</strong>${detail}</span>
+    </article>
+  `;
+}
+
+function metricTooltipDetail(metric, graphType) {
+  if (graphType === "trackedFileCount") {
+    return ` · Files ${escapeHtml(String(metric.trackedFileCount ?? 0))}`;
+  }
+
+  if (graphType === "netLineChange" || graphType === "sourceCodeGrowth") {
+    return ` · Net ${escapeHtml(formatSignedNumber(metric.netLineChange ?? 0))} · Added ${escapeHtml(String(metric.addedLineCount ?? 0))} · Deleted ${escapeHtml(String(metric.deletedLineCount ?? 0))}`;
+  }
+
+  return "";
+}
+
+function formatMetricTooltipTime(value) {
+  if (!value) {
+    return "ohne Datum";
+  }
+
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function formatSignedNumber(value) {
+  const numberValue = Number(value) || 0;
+  return numberValue > 0 ? `+${numberValue}` : String(numberValue);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function dayBucketKey(value) {

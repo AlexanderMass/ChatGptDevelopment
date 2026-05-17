@@ -85,6 +85,8 @@ Dabei entstand ein lokaler Node.js-Server als REST-Schicht zwischen statischem F
 - Erledigt: Git-Datenanalyse wurde als REST-Service umgesetzt und erzeugt Check-in-Metriken.
 - Erledigt: Die Git-Datenanalyse wurde auf den fachlichen Projektscope begrenzt.
 - Erledigt: Serverstatus und Serverlog-Diagnostik wurden ergänzt.
+- Erledigt: Die grafische Metrikdarstellung wurde um einen Tooltip erweitert, der pro Messpunkt die zugrunde liegenden Check-ins der jeweiligen Zeitgruppe anzeigt.
+- Idee: Die grafische Metrikdarstellung könnte später weiter zu einem Git-Viewer erweitert werden. Beim Hover auf einen Commit könnten die geänderten Dateien erscheinen. Optional könnte ein weiterer Drill-down die konkreten Dateiänderungen beziehungsweise Diffs sichtbar machen. Dadurch entstünde eine stärker explorative Sicht auf Git-Repositories innerhalb des Dashboards.
 - Offen: Projektübergreifende Graphauswertungen könnten später ergänzt werden.
 - Offen: Node.js könnte später als Windows-Service über NSSM eingerichtet werden.
 - Offen: Bundlegröße der Graphbibliothek kann bei Bedarf optimiert werden.
