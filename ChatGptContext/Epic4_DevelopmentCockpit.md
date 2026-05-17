@@ -62,6 +62,8 @@ Das `Development Cockpit` soll Kontextordner anderer ChatGPT-Development-Projekt
 
 Ausgangspunkt sind die bereits in der Datenbank bekannten Projekte und ihre zugeordneten Git-Repositories. Für jedes Repository kann der lokale Repository-Pfad verwendet werden, um auf oberster Ebene nach einem Kontextordner wie `ChatGptContext` zu suchen. Wird ein solcher Ordner gefunden, kann das Cockpit dessen Struktur und Markdown-Dateien anzeigen.
 
+Das Cockpit wird damit als Projektintrospektion verstanden. Es beobachtet Projekte von außen, indem es die bekannten Projekt- und Repository-Daten nutzt und die standardisierte Directory-Struktur der Projekte auswertet. Wenn Projekte der Struktur aus `NeuesProjekt.md` folgen, kann das Cockpit Projektkontext, AiScrum-Struktur, Epics, Stories und Ressourcenbezüge sichtbar machen.
+
 Der Zugriff auf Kontextdateien erfolgt nicht über eine Kopie der Dokumente und zunächst auch nicht primär über GitHub, sondern direkt über das lokale Dateisystem des jeweiligen Repositorys. Git bleibt ergänzend relevant, zum Beispiel für Remote-URL, Branch, Status oder spätere Änderungsinformationen.
 
 Mögliche Serverfunktionen:
@@ -79,6 +81,7 @@ Der Serverzugriff soll auf bekannte Repository-Pfade beschränkt bleiben. Dadurc
 - Erledigt: Der Zusammenhang zu Epic 3 wurde festgehalten.
 - Erledigt: Die Story-Struktur wurde auf Analyse, Implementierung und Querschnitt verschlankt.
 - Erledigt: Das dynamische Lesen von Kontextordnern über lokale Repository-Pfade wurde als Architekturkonzept festgehalten.
+- Idee: Das Cockpit soll Projektarbeit beim Doing von außen beobachtbar machen. Grundlage sind bekannte Projekte, ihre Git-Repositories und die standardisierte Kontextstruktur mit `ProjektContext.md`, `AiScrumContext.md`, Epics, Stories und Ressourcenreferenzen.
 - Offen: In der Development-Cockpit-Analyse muss geklärt werden, welche Projekte und Kontextordner initial angebunden werden.
 - Offen: Es muss definiert werden, welche Qualitätsanker für Kontextdateien relevant sind.
 - Offen: Die technische Umsetzung als neue Webapplikation muss noch modelliert werden.

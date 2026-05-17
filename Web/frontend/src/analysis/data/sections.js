@@ -33,6 +33,38 @@ export const useCases = [
     ],
   },
   {
+    id: "uc-use-cockpit",
+    label: "Cockpit nutzen",
+    actor: "Anwender",
+    goal: "Die Dokumentations- und Prozessstruktur verwalteter ChatGPT-Projekte überblicken.",
+    summary:
+      "Der Anwender nutzt das Cockpit als zentrale Projektintrospektion. Es soll sichtbar machen, wie die Kontextordner, Epics, Stories und Ressourcenbezüge der verwalteten ChatGPT-Projekte strukturiert sind.",
+    steps: [
+      "Cockpit öffnen",
+      "Verwaltete Projekte und Kontextstrukturen erfassen",
+      "Epics, Stories und Ressourcenbezüge prüfen",
+    ],
+    chips: [],
+    contentSections: [
+      {
+        title: "Funktion",
+        paragraphs: [
+          "Der Use Case Cockpit nutzen beschreibt eine übergreifende Sicht auf die verwalteten ChatGPT-Development-Projekte. Während das Dashboard die konkrete Projektarbeit und ihre Git-Metriken sichtbar macht, richtet sich das Cockpit stärker auf Projektstruktur, Kontextdokumentation und methodische Ordnung.",
+          "Das Cockpit soll aus den bekannten Projekten und ihren zugeordneten Repositories ableiten, welche Kontextordner, Epic-Dokumente, Story-Strukturen und Ressourcenverweise vorhanden sind. Dadurch entsteht eine zentrale Stelle, an der die Qualität und Vollständigkeit der Projektdokumentation beurteilt werden kann.",
+        ],
+      },
+      {
+        title: "Oberflächendesign",
+        paragraphs: [
+          {
+            text: "Das Oberflächendesign des Cockpits ist im Designobjekt Cockpit beschrieben.",
+            linkTarget: "design-cockpit",
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "uc-maintain-projects",
     label: "Projekte pflegen",
     actor: "Anwender",
@@ -383,6 +415,10 @@ export const useCaseTree = [
       },
     ],
   },
+  {
+    id: "uc-use-cockpit",
+    label: "Cockpit nutzen",
+  },
 ];
 
 export const surfaceTree = [
@@ -458,8 +494,12 @@ export const sections = [
         children: [
           {
             id: "design-surfaces",
-            label: "Oberflächen",
+            label: "Dashboard",
             children: surfaceTree,
+          },
+          {
+            id: "design-cockpit",
+            label: "Cockpit",
           },
         ],
       },
@@ -475,19 +515,28 @@ export const sections = [
     label: "Use Cases",
     meta: "UML-Sicht",
     eyebrow: "Analyse",
-    title: "Use-Case-Design",
-    lead:
-      "Hier entsteht die grafische Use-Case-Sicht. Die Bubbles sind als Einstieg in die spätere Dokumentation der einzelnen Use Cases gedacht.",
-    chips: ["Akteure", "Use Cases", "Dokumentation"],
+    title: "Use Case Design",
+    lead: "",
+    chips: [],
     focusTitle: "Interaktive Modellierung",
     focusText:
-      "Die Use-Case-Seite verbindet eine grafische Übersicht mit Detailseiten. Der Haupt-Use-Case Dashboard nutzen inkludiert Projektpflege und Präsentation. Projektpflege teilt sich in Projektanlage, Projektadministration und Git-Datenanalyse auf, Präsentation in Tabellen- und Grafikform.",
+      "Die Use-Case-Seite verbindet eine grafische Übersicht mit Detailseiten. Dashboard nutzen bleibt der operative Haupt-Use-Case für Projektpflege und Präsentation. Cockpit nutzen ergänzt diese Sicht um eine projektübergreifende Introspektion der Kontext- und Prozessdokumentation.",
     focusPoints: [
       "Use Cases gemeinsam fachlich schneiden",
       "Akteure, Ziele und Hauptabläufe dokumentieren",
       "Später daraus Datenmodell und API-Aufgaben ableiten",
     ],
-    contentSections: [],
+    contentSections: [
+      {
+        title: "Funktion",
+        paragraphs: [
+          "Die Anwendung ChatGptDevelopment besteht fachlich aus zwei Hauptanteilen: Dashboard und Cockpit. Beide Anteile dienen dazu, ChatGPT-Development-Projekte nicht nur technisch zu verwalten, sondern auch in ihrer Entwicklung und Dokumentationsqualität sichtbar zu machen.",
+          "Das Dashboard ist der operative Teil der Anwendung. Dort werden ChatGPT-Development-Projekte gepflegt und mit ihren Git-Repositories verbunden. Zusätzlich stellt das Dashboard eine Oberfläche bereit, um Softwareentwicklung anhand von Git-Commits, Check-in-Metriken und grafischen Auswertungen nachvollziehbar zu machen.",
+          "Das Cockpit ist als projektübergreifende Introspektionssicht gedacht. Es soll die inkludierten Projekte darstellen, insbesondere die Inhalte ihrer ChatGPT-Context-Ordner. Dadurch kann geprüft werden, inwieweit die Projekte den prozessualen Vorstellungen folgen, die im ChatGPT-Base-Bereich beschrieben werden.",
+          "Darüber hinaus soll das Cockpit perspektivisch einen Zugang zu möglichen Refactorings der Markdown-Dateien in den ChatGPT-Context-Ordnern schaffen. Es wird damit nicht nur zur Anzeige genutzt, sondern auch als Einstieg in die Pflege und Weiterentwicklung der projektbezogenen Kontextdokumentation.",
+        ],
+      },
+    ],
     nextStep:
       "Der nächste sinnvolle Schritt ist, die ersten Use Cases gemeinsam zu benennen und ihre Hauptabläufe zu schärfen.",
     children: useCaseTree,
@@ -514,19 +563,23 @@ export const sections = [
     children: [
       {
         id: "design-surfaces",
-        label: "Oberflächen",
+        label: "Dashboard",
         children: surfaceTree,
+      },
+      {
+        id: "design-cockpit",
+        label: "Cockpit",
       },
     ],
   },
   {
     id: "design-surfaces",
-    label: "Oberflächen",
+    label: "Dashboard",
     meta: "Designobjekte",
     eyebrow: "Design",
-    title: "Oberflächen",
+    title: "Dashboard",
     lead:
-      "Diese Sicht bündelt die zentralen Oberflächenobjekte der Anwendung. Sie werden aus den Use Cases herausgelöst, wenn sie mehrere fachliche Funktionen tragen oder wiederverwendbar beschrieben werden sollen.",
+      "Diese Sicht bündelt die zentralen Oberflächenobjekte des Dashboards. Sie werden aus den Use Cases herausgelöst, wenn sie mehrere fachliche Funktionen tragen oder wiederverwendbar beschrieben werden sollen.",
     chips: ["Dashboard", "Panels", "Dialog"],
     focusTitle: "Oberflächenobjekte",
     focusText:
@@ -540,6 +593,27 @@ export const sections = [
     nextStep:
       "Die einzelnen Oberflächenobjekte können nun unabhängig von den Use Cases weiter detailliert werden.",
     children: surfaceTree,
+  },
+  {
+    id: "design-cockpit",
+    label: "Cockpit",
+    meta: "Designobjekte",
+    eyebrow: "Design",
+    title: "Cockpit",
+    lead:
+      "Der Cockpit-Designbereich sammelt die Oberflächenobjekte für die projektübergreifende Introspektion der verwalteten ChatGPT-Development-Projekte.",
+    chips: [],
+    contentSections: [
+      {
+        title: "Oberflächenbeschreibung",
+        paragraphs: [
+          "Das Cockpit ist als eigenständiger Designbereich neben dem Dashboard gedacht. Während das Dashboard die operative Projektpflege und Git-Auswertung trägt, fokussiert das Cockpit die Darstellung der inkludierten Projekte und ihrer Kontextdokumentation.",
+          "Im oberen Bereich der Seite steht eine Combo-Box zur Projektauswahl. In dieser Combo-Box werden nur solche Projekte angeboten, für die ein ChatGPT-Context-Ordner ermittelt werden kann.",
+          "Unterhalb der Projektauswahl wird der Directory Tree des selektierten Projekts angezeigt. Der Tree wird aus dem zugehörigen Git-Repository geladen und zeigt den zuletzt persistierten Repository-Inhalt. Es wird also nicht der aktuell auf dem Dateisystem liegende Arbeitsstand angezeigt, sondern der letzte in Git gespeicherte Stand.",
+          "Der untere Bereich ist in zwei Panels gegliedert. Links befindet sich ein Tree-Panel mit dem klickbaren Directory Tree. Der Nutzer kann darin durch die Ordnerstruktur navigieren. Rechts befindet sich ein File-Präsentationspanel. Klickt der Nutzer im Tree auf eine Textdatei, wird deren Inhalt in diesem rechten Panel angezeigt. Auch diese File-Inhalte werden aus Git gelesen.",
+        ],
+      },
+    ],
   },
   {
     id: "design-surfaces-dashboard",

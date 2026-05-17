@@ -2,58 +2,23 @@
   <section class="hero-card">
     <p class="hero-card__eyebrow">{{ activeItem.eyebrow }}</p>
     <h1>{{ activeItem.title }}</h1>
-    <p class="hero-card__lead">{{ activeItem.lead }}</p>
+    <p v-if="activeItem.lead" class="hero-card__lead">{{ activeItem.lead }}</p>
 
     <div v-if="activeItem.chips?.length" class="hero-card__chips">
       <span v-for="chip in activeItem.chips" :key="chip" class="hero-card__chip">{{ chip }}</span>
     </div>
   </section>
 
-  <section v-if="activeSection === 'use-cases'" class="use-case-map" aria-label="Use-Case-Design">
-    <div class="use-case-map__actor">Anwender</div>
-    <div class="use-case-map__system">
-      <p class="use-case-map__system-label">ChatGptDevelopment</p>
-      <button
-        v-for="useCase in useCases"
-        :key="useCase.id"
-        class="use-case-map__bubble"
-        :class="`use-case-map__bubble--${useCase.id}`"
-        type="button"
-        @click="$emit('select-section', useCase.id)"
-      >
-        <span>{{ useCase.label }}</span>
-      </button>
-      <svg class="use-case-map__relations" viewBox="0 0 100 100" aria-hidden="true">
-        <defs>
-          <marker
-            id="include-arrow"
-            viewBox="0 0 10 10"
-            refX="8"
-            refY="5"
-            markerWidth="7"
-            markerHeight="7"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 z" />
-          </marker>
-        </defs>
-        <path class="use-case-map__relation" d="M 50 20 L 30 40" />
-        <path class="use-case-map__relation" d="M 50 20 L 78 40" />
-        <path class="use-case-map__relation" d="M 30 58 L 10 78" />
-        <path class="use-case-map__relation" d="M 30 58 L 30 78" />
-        <path class="use-case-map__relation" d="M 30 58 L 50 78" />
-        <path class="use-case-map__relation" d="M 78 58 L 70 78" />
-        <path class="use-case-map__relation" d="M 78 58 L 90 78" />
-        <text class="use-case-map__relation-label" x="31" y="34">&lt;&lt;include&gt;&gt;</text>
-        <text class="use-case-map__relation-label" x="59" y="34">&lt;&lt;include&gt;&gt;</text>
-        <text class="use-case-map__relation-label" x="7" y="74">&lt;&lt;include&gt;&gt;</text>
-        <text class="use-case-map__relation-label" x="29" y="74">&lt;&lt;include&gt;&gt;</text>
-        <text class="use-case-map__relation-label" x="47" y="74">&lt;&lt;include&gt;&gt;</text>
-        <text class="use-case-map__relation-label" x="64" y="74">&lt;&lt;include&gt;&gt;</text>
-        <text class="use-case-map__relation-label" x="83" y="74">&lt;&lt;include&gt;&gt;</text>
-      </svg>
-    </div>
-  </section>
+  <UseCaseDiagram
+    v-if="activeItem.id === 'uc-use-dashboard'"
+    :use-cases="dashboardUseCases"
+    @select-section="$emit('select-section', $event)"
+  />
+
+  <UseCaseWorksheet
+    v-if="activeSection === 'use-cases'"
+    @select-section="$emit('select-section', $event)"
+  />
 
   <section
     v-if="activeItem.modelClasses"
@@ -216,7 +181,11 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from "vue";
+import UseCaseDiagram from "./UseCaseDiagram.vue";
+import UseCaseWorksheet from "./UseCaseWorksheet.vue";
+
+const props = defineProps({
   activeItem: {
     type: Object,
     required: true,
@@ -232,6 +201,35 @@ defineProps({
 });
 
 defineEmits(["select-section", "select-target"]);
+
+const dashboardUseCases = computed(() => {
+  const dashboardUseCase = props.useCases.find((useCase) => useCase.id === "uc-use-dashboard");
+
+  if (!dashboardUseCase) {
+    return [];
+  }
+
+  const dashboardUseCaseIds = collectIncludedUseCaseIds(dashboardUseCase);
+  return props.useCases.filter((useCase) => dashboardUseCaseIds.has(useCase.id));
+});
+
+function collectIncludedUseCaseIds(useCase, collectedUseCaseIds = new Set()) {
+  if (collectedUseCaseIds.has(useCase.id)) {
+    return collectedUseCaseIds;
+  }
+
+  collectedUseCaseIds.add(useCase.id);
+
+  for (const includedUseCaseId of useCase.includes ?? []) {
+    const includedUseCase = props.useCases.find((candidate) => candidate.id === includedUseCaseId);
+
+    if (includedUseCase) {
+      collectIncludedUseCaseIds(includedUseCase, collectedUseCaseIds);
+    }
+  }
+
+  return collectedUseCaseIds;
+}
 
 function getParagraphKey(paragraph) {
   if (typeof paragraph === "string") {

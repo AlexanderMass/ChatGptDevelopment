@@ -56,6 +56,23 @@ Typischer Ablauf:
 - Cytoscape rendert den Graphen.
 - Layout, Styling und Interaktionen werden im Frontend konfiguriert.
 
+## Praktische Einstiegsempfehlung
+
+Beim erstmaligen Einsatz sollte Cytoscape.js sehr klein und kontrolliert eingeführt werden.
+
+Bewährtes Vorgehen:
+
+- zuerst ein isoliertes Arbeitsblatt mit fester Breite und fester Höhe anlegen
+- zunächst nur einen einzelnen Knoten mit fester Position rendern
+- einfache Farben verwenden, zum Beispiel Hex-Farben statt komplexer Gradienten
+- auf automatische `fit()`-, Resize- und Layout-Magie zuerst verzichten
+- Compound-Nodes oder verschachtelte Systemrahmen erst später einsetzen
+- Kanten, Pfeile, Labels und Click-Events schrittweise ergänzen
+
+Der Hintergrund ist, dass Cytoscape seine Inhalte nicht als einzelne HTML-Elemente rendert, sondern intern mehrere Canvas-Layer erzeugt. Im Browser-Debugger sieht man deshalb nicht die Knoten selbst, sondern nur die Canvas-Struktur. Wenn eine Grafik nicht sichtbar ist, sollte zuerst geprüft werden, ob die Canvas-Fläche eine stabile Größe besitzt und ob ein einzelner Testknoten mit einfacher Darstellung sichtbar wird.
+
+Erst wenn diese minimale Darstellung stabil funktioniert, sollte das Diagramm verallgemeinert werden. Besonders vorsichtig sollte man mit flexiblen Containerbreiten, automatischem `fit()`, ResizeObserver-Logik, Gradienten und Compound-Nodes umgehen.
+
 ## Abgrenzung Zu ECharts
 
 ECharts ist besser geeignet für klassische Diagramme:
