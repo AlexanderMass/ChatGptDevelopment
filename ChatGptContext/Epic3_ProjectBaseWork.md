@@ -61,6 +61,7 @@ Der Ordner `ChatGptBase` bildet dafür die zentrale Sammlung. Er enthält keine 
 - Erledigt: `MyAiScrum` wurde als persönliches High-Level-Vorgehensmodell skizziert.
 - Erledigt: Epic- und Story-Nummerierung wurde als Grundlage für spätere Commit-Zuordnung festgelegt.
 - Erledigt: Die Story-Struktur wurde auf Vorgehensmodelle, Ressourcenbeschreibungen und Querschnittliches verschlankt.
+- Erledigt: Die Methodik unterscheidet nun zwischen prozesszentrischen Epic-Akten und fachlichen `EpicxContextInfo.md`-Dateien für Chat-Transfer und Einarbeitung.
+- Erledigt: Für die bestehenden Epics wurden erste Context-Info-Dateien als operative Zielstruktur angelegt.
 - Offen: Weitere Ressourcenbeschreibungen sollen aus wiederkehrenden Architektur- und Infrastrukturentscheidungen abgeleitet werden.
 - Offen: Die Exportlogik in andere Projekte soll noch genauer beschrieben werden.
-

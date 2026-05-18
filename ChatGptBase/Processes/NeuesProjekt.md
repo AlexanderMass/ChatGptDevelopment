@@ -33,8 +33,11 @@ ProjectRoot/
   .git/
   ChatGptContext/
   Scratch/
+  <projektspezifischeOrdner>/
   README.md
 ```
+
+`<projektspezifischeOrdner>/` ist ein Platzhalter. In einem konkreten Projekt werden für die fachlichen oder technischen Umsetzungen nur die Ordner angelegt, die wirklich benötigt werden.
 
 Der Wurzelordner sollte frühzeitig unter Git-Verwaltung gestellt werden. Dadurch können Kontextdateien, Quellcode, SQL-Skripte und andere Projektartefakte gemeinsam versioniert werden.
 
@@ -47,73 +50,51 @@ Hier werden die projektbezogenen Informationen gepflegt, die ein neuer Chat ben�
 Typische Basisstruktur:
 
 ```text
-ChatGptContext/
-  ProjektContext.md
-  AiScrumContext.md
+  ChatGptContext/
+    ProjektContext.md
+    ProjektVisionStatement.md
+    ProjektScrumContext.md
 ```
+
+Dateinamen im Kontextordner sollten CamelCasing verwenden und keine Leerzeichen enthalten.
 
 `ProjektContext.md` ist der Einstieg in das konkrete Projekt. Die Datei beschreibt Projektziel, Scope, zentrale Entscheidungen, relevante Base-Prozesse, relevante Base-Ressourcen und wichtige Projektordner.
 
-`AiScrumContext.md` beschreibt die konkrete MyAiScrum-Struktur des Projekts. Die Datei listet die existierenden Epics, ihre Stories, den aktuellen Arbeitsfokus und die Verweise auf Epic- oder Story-Detaildokumente.
+`ProjektVisionStatement.md` beschreibt die langfristige Projektvision. Die Datei klärt, warum das Projekt existiert, welche Leitidee verfolgt wird und welche Qualitätsperspektive die weitere Arbeit rahmt.
 
-Für kleine Projekte können Epic-Dateien flach im Kontextordner liegen:
+`ProjektScrumContext.md` beschreibt die konkrete MyAiScrum-Struktur des Projekts. Die Details der Methode stehen in `ChatGptBase/Processes/MyAiScrum.md`; hier wird nur die projektbezogene Instanz beschrieben.
 
-```text
-ChatGptContext/
-  ProjektContext.md
-  AiScrumContext.md
-  Epic1_Analyse.md
-  Epic2_Implementierung.md
-```
+### ProjektContext.md
 
-Für größere Projekte kann zusätzliche Dokumentation ergänzt werden. Das Projekt entscheidet selbst, wie weit Epics, Stories oder Tasks ausdokumentiert werden.
+`ProjektContext.md` ist der erste Einstieg in ein konkretes Projekt.
 
-Eine mögliche Erweiterung sind Epic-Ordner:
+Die Datei sollte knapp beschreiben:
 
-```text
-ChatGptContext/
-  ProjektContext.md
-  AiScrumContext.md
-  Epic1_Analyse/
-    Epic1_Context.md
-    Story1_1_UseCases.md
-    Story1_2_Design.md
-  Epic2_Implementierung/
-    Epic2_Context.md
-    Story2_1_Server.md
-    Story2_2_Frontend.md
-```
+- Ziel und Zweck des Projekts
+- aktueller Scope und bewusste Abgrenzungen
+- wichtige Projektordner
+- relevante Prozesse aus `ChatGptBase/Processes`
+- relevante Ressourcen aus `ChatGptBase/Ressources`
+- besondere Hinweise, die ein neuer Chat vor Arbeitsbeginn kennen muss
 
-Nicht jedes Projekt benötigt Epic-Ordner. Sie sind nur eine mögliche Skalierungsstufe, wenn die Dokumentation innerhalb eines Epics umfangreicher wird.
+### ProjektVisionStatement.md
 
-Alternativ können einzelne Story- oder Task-Dateien auch ohne zusätzliche Ordner angelegt werden. Entscheidend ist nicht die formale Tiefe, sondern ob die zusätzliche Datei dem Projekt hilft, Orientierung zu behalten.
+`ProjektVisionStatement.md` beschreibt die langfristige Leitidee eines Projekts.
 
-Mögliche Aufgaben von `ChatGptContext`:
+Die Datei sollte grob festhalten:
 
-- Projektziel beschreiben
-- Scope und zentrale Entscheidungen dokumentieren
-- Analyseergebnisse sammeln
-- Epics, Stories und Tasks verwalten
-- wichtige Ressourcen- und Methodenimporte nennen
-- Übergaben an neue Chats erleichtern
+- warum das Projekt existiert
+- welche Perspektive oder welches Leitbild es verfolgt
+- welche Qualitäts- oder Entwicklungsrichtung wichtig ist
+- welche langfristige Wirkung oder Nutzung angestrebt wird
 
-## Projektabhängige Ordner
+Das Vision Statement ist kein detaillierter Projektplan. Es ist ein Nordstern, der spätere Entscheidungen einordnet.
 
-Weitere Unterordner werden abhängig vom jeweiligen Projekt angelegt.
+### ProjektScrumContext.md
 
-Die Struktur sollte nicht künstlich aufgebläht werden. Jeder Ordner sollte eine klare Aufgabe haben.
+`ProjektScrumContext.md` beschreibt die konkrete MyAiScrum-Instanz des Projekts.
 
-Häufige Beispiele:
-
-```text
-ProjectRoot/
-  ChatGptContext/
-  Scratch/
-  Web/
-  Java/
-  Python/
-  Sql/
-```
+Die methodischen Details zu Epics, Stories, Tasks, Backlog und Commit-Konvention stehen in `ChatGptBase/Processes/MyAiScrum.md` und sollen hier nicht wiederholt werden. Dort wird auch die Filestruktur für Epics und ihre Kontextdokumentation beschrieben.
 
 ## Scratch
 
@@ -125,52 +106,23 @@ Die Inhalte des Scratch-Ordners sind zunächst nicht stabil und sollen nicht aut
 
 `Scratch/` sollte deshalb in `.gitignore` eingetragen werden.
 
-## Web
+## Projektspezifische Ordner
 
-`Web` wird verwendet, wenn ein Projekt Webanteile enthält.
+Weitere Unterordner werden abhängig vom jeweiligen Projekt angelegt.
 
-Der Ordner kann statische Webseiten, Web-Apps und Serveranteile enthalten.
+Die Struktur sollte nicht künstlich aufgebläht werden. Jeder Ordner braucht eine klare Aufgabe und sollte aus dem konkreten Projektbedarf entstehen.
 
-Eine mögliche Struktur:
-
-```text
-Web/
-  frontend/
-  server/
-```
-
-`frontend` enthält die clientseitige Oberfläche. `server` enthält dynamische Serverfunktionen, zum Beispiel Node.js-REST-Services.
-
-## Java
-
-`Java` kann verwendet werden, wenn ein Projekt Java-Code enthält oder eine Java-Applikation gepflegt wird.
-
-Der Ordner kann Quellcode, Build-Dateien, Konfigurationen oder projektbezogene Java-Module enthalten. Die konkrete Struktur hängt vom verwendeten Build-System und vom bestehenden Projekt ab.
-
-## Python
-
-`Python` kann verwendet werden, wenn ein Projekt hauptsächlich aus Python-Code besteht oder Python-Anteile enthält.
-
-Der Ordner kann Skripte, Packages, virtuelle Umgebungsbeschreibungen oder serverseitige Python-Komponenten enthalten. Die konkrete Struktur soll projektbezogen entschieden werden.
-
-## Sql
-
-`Sql` ist kein verpflichtender Standardordner.
-
-Der Ordner wird angelegt, wenn das Projekt SQL-Artefakte benötigt.
-
-Typische Inhalte:
+Mögliche Beispiele sind:
 
 ```text
-Sql/
-  create_schema.sql
-  select_project_overview.sql
-  select_metric_summary.sql
+ProjectRoot/
+  Web/
+  Java/
+  Python/
+  Sql/
 ```
 
-In `Sql` können Skripte zur Erzeugung des Datenbankschemas liegen, aber auch wichtige projektbezogene SQL-Selects oder andere SQL-Hilfsdateien.
-
-SQL-Skripte dürfen versioniert werden, solange sie keine Passwörter oder privaten Zugangsdaten enthalten. Wenn Datenbankdesign rein analytisch beschrieben wird, kann die Beschreibung zusätzlich im Analyse- oder Modellierungsbereich des Projekts liegen.
+Diese Ordner werden nicht als allgemeine Pflichtstruktur detailliert. Wenn ein Projekt besondere Erwartungen an Web-, Java-, Python-, SQL- oder andere Artefakte hat, wird das im jeweiligen `ProjektContext.md` oder in einer passenden Ressourcenbeschreibung festgehalten.
 
 ## README
 
@@ -206,7 +158,7 @@ Zu Beginn eines Projekts sollte die KI nicht sofort große Implementierungen sta
 1. Projektziel klären.
 2. Projektwurzel unter Git-Kontrolle stellen.
 3. `ChatGptContext` anlegen.
-4. `ProjektContext.md` und `AiScrumContext.md` anlegen.
+4. `ProjektContext.md`, `ProjektVisionStatement.md` und `ProjektScrumContext.md` anlegen.
 5. `Scratch` anlegen und über `.gitignore` von der Versionierung ausnehmen.
 6. relevante Base-Prozesse und Ressourcen importieren oder referenzieren.
 7. erste Epics, Stories oder Tasks skizzieren.
@@ -252,7 +204,8 @@ Es sollte aber arbeitsfähig sein:
 - Der Projektwurzelordner steht unter Git-Kontrolle.
 - `ChatGptContext` ist als zentraler Dokumentationsort vorhanden.
 - `ProjektContext.md` beschreibt das Projekt.
-- `AiScrumContext.md` beschreibt die Arbeitsstruktur.
+- `ProjektVisionStatement.md` beschreibt die langfristige Leitidee.
+- `ProjektScrumContext.md` beschreibt die Arbeitsstruktur und begründet die Epics.
 - `Scratch` ist als nicht-versionierter temporärer Arbeitsbereich vorhanden.
 - Die Ordnerstruktur ist knapp und projektbezogen.
 - Die Zusammenarbeit zwischen Mensch und KI ist gerahmt.

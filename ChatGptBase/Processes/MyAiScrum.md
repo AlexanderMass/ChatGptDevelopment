@@ -20,9 +20,9 @@ Für kleine Projekte reichen Epics und Stories häufig aus. Für größere Proje
 
 Sprints werden zunächst nicht als Kernelement geführt. Sie können situativ entstehen, sollen aber nicht die Grundstruktur dominieren.
 
-## AiScrumContext
+## ProjektScrumContext
 
-`AiScrumContext.md` ist der zentrale Index der MyAiScrum-Struktur eines konkreten Projekts.
+`ProjektScrumContext.md` ist der zentrale Index der MyAiScrum-Struktur eines konkreten Projekts.
 
 Diese Datei liegt im projektspezifischen Kontextordner, in der Regel unter `ChatGptContext`. Sie beschreibt nicht die allgemeine Methode, sondern die konkrete Arbeitsstruktur des jeweiligen Projekts.
 
@@ -39,13 +39,20 @@ Typische Inhalte:
 Damit trennt sich die Projektbeschreibung von der Arbeitsstruktur:
 
 - `ProjektContext.md`: Was ist das Projekt?
-- `AiScrumContext.md`: Wie ist die Arbeit im Projekt strukturiert?
+- `ProjektScrumContext.md`: Warum gibt es welche Epics und wie ist die Arbeit im Projekt strukturiert?
 
 ## Epic Als Teilprojekt
 
 Ein Epic wird als Teilprojekt verstanden.
 
-Für jedes Epic wird mindestens eine eigene Markdown-Datei angelegt. Dieses Dokument beschreibt den fachlichen Scope, die Zielsetzung, wichtige Entscheidungen, Stories, Tasks und den aktuellen Arbeitsstand.
+Für jedes Epic werden im Normalfall zwei Markdown-Dateien unterschieden:
+
+- `EpicxName.md`: prozesszentrische Epic-Akte mit Ziel, Scope, Stories, Tasks, Entscheidungen, Backlog, Fortschritt und Commit-Bezügen.
+- `Epic<x>ContextInfo.md`: inhaltliche Kontextakte mit dem verdichteten Wissen, das ein neuer Chat oder Thread benötigt, um fachlich schnell anschlussfähig zu werden.
+
+Das kleine `x` steht in der Methodik nur als Platzhalter für die Epic-Nummer. In konkreten Projekten wird es durch die Zahl ersetzt, zum Beispiel `Epic1Analyse.md` und `Epic1ContextInfo.md`.
+
+Die Trennung verhindert, dass Prozessverlauf und Einarbeitungswissen in derselben Datei vermischt werden. Die Epic-Akte beschreibt, wie die Arbeit organisiert und fortgeschrieben wird. Die Context-Info-Akte beschreibt, was fachlich verstanden werden muss, um an diesem Epic weiterzuarbeiten.
 
 Die Epic-Dateien liegen nicht in `ChatGptBase`, sondern im Kontextordner des jeweiligen konkreten Projekts, in der Regel unter `ChatGptContext`. `ChatGptBase` beschreibt nur die allgemeine Methode und kann in andere Projekte kopiert werden.
 
@@ -57,54 +64,44 @@ Jedes Epic erhält eine fortlaufende Nummer:
 
 Die Epic-Nummer bleibt stabil, auch wenn sich der Titel des Epics später ändert. Dadurch kann sie in Git-Commits, Dokumentation und späteren Auswertungen eindeutig referenziert werden.
 
-## Skalierungsstufen
+## Standardstruktur Im Projektkontext
 
-Für kleine Projekte kann eine flache Struktur ausreichen:
-
-```text
-ChatGptContext/
-  ProjektContext.md
-  AiScrumContext.md
-  Epic1_Analyse.md
-  Epic2_Implementierung.md
-```
-
-Für größere Projekte kann zusätzliche Dokumentation ergänzt werden. Das Projekt entscheidet selbst, wie weit Epics, Stories oder Tasks ausdokumentiert werden.
-
-Eine mögliche Erweiterung ist ein eigener Epic-Ordner:
+Ein Projektkontext soll eine knappe, gut lesbare Standardstruktur verwenden.
 
 ```text
 ChatGptContext/
   ProjektContext.md
-  AiScrumContext.md
-  Epic1_Analyse/
-    Epic1_Context.md
-    Story1_1_UseCases.md
-    Story1_2_Design.md
-    Story1_3_Modellierung.md
-  Epic2_DashboardEntwicklung/
-    Epic2_Context.md
-    Story2_1_DashboardOberflaeche.md
-    Story2_2_ProjektDialog.md
+  ProjektVisionStatement.md
+  ProjektScrumContext.md
+  Epic<x><Thema>.md
+  Epic<x>ContextInfo.md
 ```
 
-Diese Ordnerstruktur ist optional. Sie wird nur genutzt, wenn eine einzelne Epic-Datei zu groß wird oder wenn Stories eigenständige Dokumentationsräume benötigen.
+`<x>` steht für die Epic-Nummer. `<Thema>` steht für den kurzen fachlichen Epic-Namen in CamelCasing.
 
-Alternativ können einzelne Story-Dateien auch direkt neben den Epic-Dateien liegen. Wenn selbst eine Story-Datei nicht ausreicht, können auch Tasks eigene Detaildateien erhalten. Das ist keine Pflichtstruktur, sondern ein Skalierungsmechanismus.
+Beispiel:
 
-## Benennung
+```text
+Epic1Analyse.md
+Epic1ContextInfo.md
+```
 
-Dateinamen sollten CamelCasing verwenden und keine Leerzeichen enthalten.
+## Epic Context Info
 
-Beispiele:
+`Epic<x>ContextInfo.md` ist die fachliche Einarbeitungsdatei eines Epics.
 
-- `AiScrumContext.md`
-- `Epic1_Analyse.md`
-- `Epic1_Context.md`
-- `Story1_1_UseCases.md`
-- `Story2_2_ProjektDialog.md`
+Sie soll nicht den gesamten historischen Verlauf der Arbeit wiederholen. Stattdessen verdichtet sie den aktuellen fachlichen Stand, wichtige Begriffe, zentrale Entscheidungen, relevante Ressourcen und bekannte offene Fragen. Dadurch kann ein neuer Chat zuerst die Kontext-Info-Dateien lesen und versteht schnell, worum es in einem Epic geht.
 
-Story- und Task-Dateien sind optional. Häufig reicht es, Stories und Tasks innerhalb der Epic-Datei zu dokumentieren. Eigene Dateien entstehen nur, wenn dadurch Klarheit gewonnen wird.
+Typische Inhalte:
+
+- aktueller fachlicher Stand des Epics
+- zentrale Begriffe und Modelle
+- wichtige Architektur- oder Designentscheidungen
+- relevante Dateien, Ordner und Ressourcen
+- Abgrenzung zu anderen Epics
+- offene fachliche Fragen, die für die Weiterarbeit wichtig sind
+
+Alte thematische Kontextdateien können bei einem Methoden-Refactoring in passende `Epic<x>ContextInfo.md`-Dateien überführt werden. Dabei sollen die Inhalte nicht blind kopiert, sondern konsolidiert und auf den aktuellen Stand gebracht werden.
 
 ## Struktur Eines Epic-Dokuments
 
@@ -133,7 +130,7 @@ Fachliche oder technische Einordnung des Epics.
 - [ ] Story 1.2: ...
 - [ ] Story 1.3: ...
 
-## Tasks
+## Tasks Optional
 
 - [ ] Task 1.1.1: ...
 - [ ] Task 1.1.2: ...
@@ -174,7 +171,7 @@ Beispiele:
 
 Stories können während der Arbeit entstehen. Sie müssen nicht vollständig vorab bekannt sein.
 
-## Tasks
+## Tasks Optional
 
 Tasks beschreiben konkrete Arbeitseinheiten innerhalb einer Story.
 
@@ -252,7 +249,7 @@ Ein typischer Ablauf kann so aussehen:
 3. Bei größeren Stories werden Tasks ergänzt.
 4. Mensch und KI arbeiten an einer Story oder Task.
 5. Während der Umsetzung entstehen neue Beobachtungen.
-6. `AiScrumContext.md`, Epic-Kontext oder Story-Dateien werden bei Bedarf aktualisiert.
+6. `ProjektScrumContext.md`, Epic-Kontext oder Story-Dateien werden bei Bedarf aktualisiert.
 7. Am Ende wird der Fortschritt im Backlog festgehalten.
 
 Damit entsteht eine leichte, projektübergreifend wiederverwendbare Struktur für Planung, Umsetzung und Reflexion.

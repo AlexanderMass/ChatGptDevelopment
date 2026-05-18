@@ -83,7 +83,7 @@ Der Serverzugriff soll auf bekannte Repository-Pfade beschränkt bleiben. Dadurc
 - Erledigt: Der Zusammenhang zu Epic 3 wurde festgehalten.
 - Erledigt: Die Story-Struktur wurde auf Analyse, Implementierung und Querschnitt verschlankt.
 - Erledigt: Das dynamische Lesen von Kontextordnern über lokale Repository-Pfade wurde als Architekturkonzept festgehalten.
-- Idee: Das Cockpit soll Projektarbeit beim Doing von außen beobachtbar machen. Grundlage sind bekannte Projekte, ihre Git-Repositories und die standardisierte Kontextstruktur mit `ProjektContext.md`, `AiScrumContext.md`, Epics, Stories und Ressourcenreferenzen.
+- Idee: Das Cockpit soll Projektarbeit beim Doing von außen beobachtbar machen. Grundlage sind bekannte Projekte, ihre Git-Repositories und die standardisierte Kontextstruktur mit `ProjektContext.md`, `ProjektScrumContext.md`, Epics, Stories und Ressourcenreferenzen.
 - Offen: In der Development-Cockpit-Analyse muss geklärt werden, welche Projekte und Kontextordner initial angebunden werden.
 - Offen: Es muss definiert werden, welche Qualitätsanker für Kontextdateien relevant sind.
 - Offen: Die technische Umsetzung als neue Webapplikation muss noch modelliert werden.

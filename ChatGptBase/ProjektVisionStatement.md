@@ -70,7 +70,7 @@ Sql/
 Für Projekte werden insbesondere zwei Einstiegspunkte empfohlen:
 
 - `ProjektContext.md`: beschreibt das Projekt, seinen Zweck, seine Struktur und relevante Base-Imports.
-- `AiScrumContext.md`: beschreibt die konkrete Arbeitsstruktur über Epics, Stories und optionale Tasks.
+- `ProjektScrumContext.md`: beschreibt und begründet die konkrete Arbeitsstruktur über Epics, Stories und optionale Tasks.
 
 Diese Dateien helfen, Projektinhalt und Arbeitsorganisation zu trennen.
 
@@ -132,4 +132,3 @@ Langfristig soll eine Arbeitsweise entstehen, in der ChatGPT-Development-Projekt
 - menschliche Steuerung und KI-Unterstützung besser koppeln
 
 `ChatGptBase` ist dafür die gemeinsame Basis.
-
