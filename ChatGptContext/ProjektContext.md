@@ -47,7 +47,7 @@ Im Zentrum steht die Konzeption einer technischen und methodischen Grundlage fü
 - `Sql`: SQL-Skripte, Datenhaltung, Datenmodellierung und datenbankbezogene Implementierung
 - `Web`: Oberflächen, Visualisierung und interaktive Exploration der erfassten Entwicklungsdaten
 
-Die fachliche Analyse wird als eigener Kontext dokumentiert, weil die konzeptionellen Fragen zu Projektvergleich, Kontextstruktur, Arbeitsprozessen und Metrikbildung über mehrere Teilbereiche hinweg reichen.
+Die fachliche Analyse wird in den Epic-Dateien dokumentiert. Die wichtigsten fachlichen Einstiegspunkte liegen in den Context-Info-Dateien der Epics.
 
 ## Repository-Struktur
 
@@ -57,16 +57,13 @@ Die fachliche Analyse wird als eigener Kontext dokumentiert, weil die konzeption
 - `Web`: Oberflächen, Visualisierung und interaktive Exploration der Projektdaten
 - `Scratch`: temporärer, nicht-versionierter Arbeitsbereich für KI-Artefakte und Zwischenergebnisse
 
-## Teilprojekt-Kontexte
+## Zentrale Kontextdateien
 
 - `ProjektContext.md`: Einstiegskontext für dieses Projekt
-- `AnalysisContext.md`: fachliche Modellierung, Metriklogik und projektübergreifende Begriffsarbeit
-- `ApiContext.md`: API-Schicht, Schnittstellenlogik und Datenverarbeitung
-- `DatabaseContext.md`: Datenmodell, Persistenz und datenbanknahe Implementierung
-- `WebDesignContext.md`: Webanwendung, Visualisierung und Interaktionskonzepte
-- `ReportContext.md`: leichtgewichtiges Arbeitsreporting und Git-Arbeitsberichte
-- `MethodContext.md`: wiederverwendbare Vorgehensstruktur für KI-gestützte Projektanalyse
-- `Epic*.md`: Epic-Dokumente nach `MyAiScrum`
+- `ProjektVisionStatement.md`: langfristige Leitidee und Qualitätsperspektive
+- `ProjektScrumContext.md`: Begründung und Struktur der Epics
+- `Epic<x>_<Thema>.md`: prozesszentrische Epic-Akte
+- `Epic<x>_ContextInfo.md`: fachliche Einarbeitung pro Epic
 
 ## Nächste Sinnvolle Schritte
 
@@ -74,4 +71,3 @@ Die fachliche Analyse wird als eigener Kontext dokumentiert, weil die konzeption
 2. Den Prozess für Context-Imports und Chat-Transfer ausarbeiten.
 3. Das `Development Cockpit` als Sicht auf Projekt- und Kontextordner konzipieren.
 4. Projektkontext, Base-Prozesse und Ressourcen schrittweise gegeneinander prüfen.
-
