@@ -37,7 +37,7 @@ Zentrale Stories:
 Wichtige Dateien:
 
 - `Epic1_Analyse.md`
-- `Epic1ContextInfo.md`
+- `Epic1_ContextInfo.md`
 
 ## Epic 2: Dashboard-Entwicklung
 
@@ -54,7 +54,7 @@ Zentrale Stories:
 Wichtige Dateien:
 
 - `Epic2_DashboardEntwicklung.md`
-- `Epic2ContextInfo.md`
+- `Epic2_ContextInfo.md`
 
 ## Epic 3: Project-Based Work
 
@@ -71,7 +71,7 @@ Zentrale Stories:
 Wichtige Dateien:
 
 - `Epic3_ProjectBaseWork.md`
-- `Epic3ContextInfo.md`
+- `Epic3_ContextInfo.md`
 - `ChatGptBase/Processes`
 - `ChatGptBase/Ressources`
 
@@ -90,7 +90,7 @@ Zentrale Stories:
 Wichtige Dateien:
 
 - `Epic4_DevelopmentCockpit.md`
-- `Epic4ContextInfo.md`
+- `Epic4_ContextInfo.md`
 
 ## Zusammenhang Der Epics
 
@@ -110,6 +110,6 @@ Analyse führt zu Implementierung. Implementierung erzeugt Methodenerfahrung. Me
 
 Der aktuelle Fokus liegt auf Epic 3 und Epic 4.
 
-Epic 3 stabilisiert die Methodik rund um `ProjektContext.md`, `ProjektScrumContext.md`, `EpicxName.md` und `EpicxContextInfo.md`.
+Epic 3 stabilisiert die Methodik rund um `ProjektContext.md`, `ProjektScrumContext.md`, `Epic<x>_<Thema>.md` und `Epic<x>_ContextInfo.md`.
 
 Epic 4 liefert die operative Oberfläche, um solche Kontextstrukturen projektübergreifend sichtbar zu machen.

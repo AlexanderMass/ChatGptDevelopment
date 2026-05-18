@@ -24,8 +24,8 @@ Der Ordner `ChatGptBase` ist die exportierbare Basis. Dort werden Prozesse, Ress
 
 Epics sollen kuenftig zwei Dokumenttypen unterscheiden:
 
-- `EpicxName.md`: prozesszentrische Epic-Akte
-- `EpicxContextInfo.md`: fachliche Einarbeitungs- und Kontextakte
+- `Epic<x>_<Thema>.md`: prozesszentrische Epic-Akte
+- `Epic<x>_ContextInfo.md`: fachliche Einarbeitungs- und Kontextakte
 
 Diese Trennung soll Chat-Transfer, Methodenrefactoring und langfristige Dokumentationspflege erleichtern.
 

@@ -68,8 +68,8 @@ Wichtige Bausteine sind:
 - `ProjektContext.md`: Einstieg in das konkrete Projekt
 - `ProjektVisionStatement.md`: langfristige Leitidee und Qualitätsperspektive des Projekts
 - `ProjektScrumContext.md`: Begründung und Struktur der Epics
-- `EpicxName.md`: prozesszentrische Epic-Akte
-- `EpicxContextInfo.md`: fachliche Einarbeitung pro Epic
+- `Epic<x>_<Thema>.md`: prozesszentrische Epic-Akte
+- `Epic<x>_ContextInfo.md`: fachliche Einarbeitung pro Epic
 
 Diese Struktur soll den Chat-Transfer erleichtern. Ein neuer Chat soll nicht den gesamten historischen Dialog kennen müssen, sondern über verdichtete Kontextdateien schnell arbeitsfähig werden.
 

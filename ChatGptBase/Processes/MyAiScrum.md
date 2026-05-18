@@ -47,10 +47,10 @@ Ein Epic wird als Teilprojekt verstanden.
 
 Für jedes Epic werden im Normalfall zwei Markdown-Dateien unterschieden:
 
-- `EpicxName.md`: prozesszentrische Epic-Akte mit Ziel, Scope, Stories, Tasks, Entscheidungen, Backlog, Fortschritt und Commit-Bezügen.
-- `Epic<x>ContextInfo.md`: inhaltliche Kontextakte mit dem verdichteten Wissen, das ein neuer Chat oder Thread benötigt, um fachlich schnell anschlussfähig zu werden.
+- `Epic<x>_<Thema>.md`: prozesszentrische Epic-Akte mit Ziel, Scope, Stories, Tasks, Entscheidungen, Backlog, Fortschritt und Commit-Bezügen.
+- `Epic<x>_ContextInfo.md`: inhaltliche Kontextakte mit dem verdichteten Wissen, das ein neuer Chat oder Thread benötigt, um fachlich schnell anschlussfähig zu werden.
 
-Das kleine `x` steht in der Methodik nur als Platzhalter für die Epic-Nummer. In konkreten Projekten wird es durch die Zahl ersetzt, zum Beispiel `Epic1Analyse.md` und `Epic1ContextInfo.md`.
+Das kleine `x` steht in der Methodik nur als Platzhalter für die Epic-Nummer. `<Thema>` steht für den kurzen fachlichen Epic-Namen in CamelCasing. In konkreten Projekten wird daraus zum Beispiel `Epic1_Analyse.md` und `Epic1_ContextInfo.md`.
 
 Die Trennung verhindert, dass Prozessverlauf und Einarbeitungswissen in derselben Datei vermischt werden. Die Epic-Akte beschreibt, wie die Arbeit organisiert und fortgeschrieben wird. Die Context-Info-Akte beschreibt, was fachlich verstanden werden muss, um an diesem Epic weiterzuarbeiten.
 
@@ -73,8 +73,8 @@ ChatGptContext/
   ProjektContext.md
   ProjektVisionStatement.md
   ProjektScrumContext.md
-  Epic<x><Thema>.md
-  Epic<x>ContextInfo.md
+  Epic<x>_<Thema>.md
+  Epic<x>_ContextInfo.md
 ```
 
 `<x>` steht für die Epic-Nummer. `<Thema>` steht für den kurzen fachlichen Epic-Namen in CamelCasing.
@@ -82,13 +82,13 @@ ChatGptContext/
 Beispiel:
 
 ```text
-Epic1Analyse.md
-Epic1ContextInfo.md
+Epic1_Analyse.md
+Epic1_ContextInfo.md
 ```
 
 ## Epic Context Info
 
-`Epic<x>ContextInfo.md` ist die fachliche Einarbeitungsdatei eines Epics.
+`Epic<x>_ContextInfo.md` ist die fachliche Einarbeitungsdatei eines Epics.
 
 Sie soll nicht den gesamten historischen Verlauf der Arbeit wiederholen. Stattdessen verdichtet sie den aktuellen fachlichen Stand, wichtige Begriffe, zentrale Entscheidungen, relevante Ressourcen und bekannte offene Fragen. Dadurch kann ein neuer Chat zuerst die Kontext-Info-Dateien lesen und versteht schnell, worum es in einem Epic geht.
 
@@ -101,7 +101,7 @@ Typische Inhalte:
 - Abgrenzung zu anderen Epics
 - offene fachliche Fragen, die für die Weiterarbeit wichtig sind
 
-Alte thematische Kontextdateien können bei einem Methoden-Refactoring in passende `Epic<x>ContextInfo.md`-Dateien überführt werden. Dabei sollen die Inhalte nicht blind kopiert, sondern konsolidiert und auf den aktuellen Stand gebracht werden.
+Alte thematische Kontextdateien können bei einem Methoden-Refactoring in passende `Epic<x>_ContextInfo.md`-Dateien überführt werden. Dabei sollen die Inhalte nicht blind kopiert, sondern konsolidiert und auf den aktuellen Stand gebracht werden.
 
 ## Struktur Eines Epic-Dokuments
 

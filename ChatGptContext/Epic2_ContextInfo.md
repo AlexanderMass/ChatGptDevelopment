@@ -38,4 +38,4 @@ Epic 2 beschreibt die Dashboard-Applikation. Das Development Cockpit ist eine ei
 
 ## Offene Refactoring-Frage
 
-Ein Teil der Dashboard-Dokumentation ist in aelteren allgemeinen Kontextdateien enthalten. Bei einem spaeteren Refactoring sollte entschieden werden, welche Inhalte nach `Epic2ContextInfo.md` gehoeren und welche als Detaildokumente bestehen bleiben.
+Ein Teil der Dashboard-Dokumentation ist in aelteren allgemeinen Kontextdateien enthalten. Bei einem spaeteren Refactoring sollte entschieden werden, welche Inhalte nach `Epic2_ContextInfo.md` gehoeren und welche als Detaildokumente bestehen bleiben.

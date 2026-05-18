@@ -33,11 +33,11 @@ ProjectRoot/
   .git/
   ChatGptContext/
   Scratch/
-  <projektspezifischeOrdner>/
+  <ProjektSpezifischeOrdner>/
   README.md
 ```
 
-`<projektspezifischeOrdner>/` ist ein Platzhalter. In einem konkreten Projekt werden für die fachlichen oder technischen Umsetzungen nur die Ordner angelegt, die wirklich benötigt werden.
+`<ProjektSpezifischeOrdner>/` ist ein Platzhalter. In einem konkreten Projekt werden für die fachlichen oder technischen Umsetzungen nur die Ordner angelegt, die wirklich benötigt werden.
 
 Der Wurzelordner sollte frühzeitig unter Git-Verwaltung gestellt werden. Dadurch können Kontextdateien, Quellcode, SQL-Skripte und andere Projektartefakte gemeinsam versioniert werden.
 
