@@ -18,6 +18,23 @@ export async function fetchProjectCheckInMetrics(projectId) {
   return payload.data ?? [];
 }
 
+export async function fetchCheckInMetricFiles(projectId, checkInMetricId) {
+  const response = await fetch(
+    `${apiBaseUrl}/api/projects/${encodeURIComponent(projectId)}/check-in-metrics/${encodeURIComponent(checkInMetricId)}/files`
+  );
+  const payload = await readJsonResponse(response);
+  return payload.data ?? { files: [] };
+}
+
+export async function fetchCheckInMetricFileDiff(projectId, checkInMetricId, filePath) {
+  const query = new URLSearchParams({ path: filePath });
+  const response = await fetch(
+    `${apiBaseUrl}/api/projects/${encodeURIComponent(projectId)}/check-in-metrics/${encodeURIComponent(checkInMetricId)}/files/diff?${query}`
+  );
+  const payload = await readJsonResponse(response);
+  return payload.data ?? { rows: [] };
+}
+
 export async function createProject(projectInput) {
   const response = await fetch(`${apiBaseUrl}/api/projects`, {
     method: "POST",

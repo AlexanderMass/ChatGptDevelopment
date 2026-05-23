@@ -181,7 +181,12 @@
                     :key="metric.checkInMetricId"
                   >
                     <td>{{ formatCheckInDate(metric.commitDate) }}</td>
-                    <td>{{ metric.messageSubject }}</td>
+                    <td
+                      @mouseenter="openCheckInFileTooltip($event, metric)"
+                      @mouseleave="closeCheckInFileTooltipIfOutside"
+                    >
+                      {{ metric.messageSubject }}
+                    </td>
                     <td class="check-in-metric-table__number">{{ metric.changedFileCount }}</td>
                     <td class="check-in-metric-table__number">{{ metric.addedLineCount }}</td>
                     <td class="check-in-metric-table__number">{{ metric.deletedLineCount }}</td>
@@ -194,6 +199,7 @@
               </tbody>
             </table>
           </div>
+
         </div>
 
         <div v-else class="project-presentation-panel project-presentation-panel--graph">
@@ -230,9 +236,52 @@
             </label>
           </div>
 
-          <div ref="metricChartElement" class="graph-presentation-area">
+          <div
+            ref="metricChartElement"
+            class="graph-presentation-area"
+            @mousemove="openGraphMetricTooltip"
+            @mouseleave="closeGraphTooltipsIfOutside"
+          >
             <p v-if="!checkInMetrics.length">Für dieses Projekt sind keine Graphdaten vorhanden.</p>
           </div>
+
+          <Teleport to="body">
+            <div
+            v-if="graphMetricTooltip"
+            class="graph-metric-tooltip"
+            :style="{ left: `${graphMetricTooltip.x}px`, top: `${graphMetricTooltip.y}px` }"
+            @mouseenter="keepGraphMetricTooltipOpen"
+            @mouseleave="closeGraphMetricTooltip"
+          >
+              <section class="metric-chart-tooltip__content">
+                <header class="metric-chart-tooltip__header">
+                  <strong>
+                    {{ graphMetricTooltip.bucket.label }}:
+                    {{ graphTypeLabel(selectedGraphType) }}
+                    {{ metricTooltipTotalText(graphMetricTooltip.bucket, selectedGraphType, graphMetricTooltip.value) }}
+                  </strong>
+                </header>
+                <div class="metric-chart-tooltip__list">
+                  <article
+                    v-for="metric in graphMetricTooltip.bucket.metrics"
+                    :key="metric.checkInMetricId"
+                    class="metric-chart-tooltip__row"
+                    @mouseenter="openCheckInFileTooltip($event, metric)"
+                    @mouseleave="closeCheckInFileTooltipIfOutside"
+                  >
+                    <span>
+                      {{ formatMetricTooltipTime(metric.commitDate) }}:
+                      <strong>{{ metric.messageSubject || "(ohne Message)" }}</strong>
+                      {{ metricTooltipDetailText(metric, selectedGraphType) }}
+                    </span>
+                  </article>
+                  <div v-if="!graphMetricTooltip.bucket.metrics.length" class="metric-chart-tooltip__empty">
+                    Keine Check-ins
+                  </div>
+                </div>
+              </section>
+            </div>
+          </Teleport>
         </div>
       </section>
 
@@ -263,6 +312,36 @@
       @confirm="confirmRepositoryRemoval"
       @cancel="cancelRepositoryRemoval"
     />
+
+    <Teleport to="body">
+      <div
+        v-if="checkInFileTooltip"
+        class="check-in-file-tooltip"
+        :style="{ left: `${checkInFileTooltip.x}px`, top: `${checkInFileTooltip.y}px` }"
+        @mouseenter="keepCheckInFileTooltipOpen"
+        @mouseleave="closeCheckInFileTooltipAfterLeave"
+      >
+        <header>
+          <strong>{{ formatMetricTooltipTime(checkInFileTooltip.metric.commitDate) }}</strong>
+          <span>{{ checkInFileTooltip.metric.messageSubject || "(ohne Message)" }}</span>
+        </header>
+        <p v-if="checkInFileTooltip.isLoading">Dateien werden aus Git gelesen.</p>
+        <p v-else-if="checkInFileTooltip.errorMessage">{{ checkInFileTooltip.errorMessage }}</p>
+        <ul v-else-if="checkInFileTooltip.files.length">
+          <li
+            v-for="file in checkInFileTooltip.files"
+            :key="`${file.status}:${file.path}:${file.previousPath}`"
+          >
+            <button type="button" @click="openCheckInFileDiff(file)">
+              <span>{{ formatGitFileStatus(file.status) }}</span>
+              <strong>{{ file.path }}</strong>
+              <small v-if="file.previousPath">vorher: {{ file.previousPath }}</small>
+            </button>
+          </li>
+        </ul>
+        <p v-else>Keine geänderten Dateien gefunden.</p>
+      </div>
+    </Teleport>
 
     <Teleport to="body">
       <div v-if="gitAnalysisResult" class="message-box-backdrop" role="presentation">
@@ -308,6 +387,68 @@
         </section>
       </div>
     </Teleport>
+
+    <Teleport to="body">
+      <div v-if="fileDiffDialog" class="file-diff-backdrop" role="presentation">
+        <section class="file-diff-dialog" role="dialog" aria-modal="true" aria-label="Git-Dateidiff">
+          <header class="file-diff-dialog__header">
+            <div class="file-diff-dialog__title">
+              <h2>{{ fileDiffDialog.file.path }}</h2>
+              <p><strong>Check-in:</strong> {{ fileDiffDialog.metric.messageSubject || "(ohne Message)" }}</p>
+            </div>
+            <button type="button" @click="closeCheckInFileDiff">x</button>
+          </header>
+
+          <main class="file-diff-dialog__body">
+            <div v-if="fileDiffDialog.isLoading" class="file-diff-dialog__message">
+              Dateidiff wird aus Git gelesen.
+            </div>
+            <div v-else-if="fileDiffDialog.errorMessage" class="file-diff-dialog__message file-diff-dialog__message--error">
+              {{ fileDiffDialog.errorMessage }}
+            </div>
+            <div v-else-if="!fileDiffDialog.rows.length" class="file-diff-dialog__message">
+              Für diese Datei wurden keine Diff-Zeilen gefunden.
+            </div>
+            <div v-else ref="fileDiffViewElement" class="file-diff-view">
+              <div class="file-diff-view__header">
+                <div class="file-diff-view__title">Vorher</div>
+                <div class="file-diff-view__title">Nachher</div>
+              </div>
+
+            <div
+              v-for="(row, index) in fileDiffDialog.rows"
+              :key="`${index}:${row.type}:${row.oldText}:${row.newText}`"
+              :class="['file-diff-view__row', `file-diff-view__row--${row.type}`]"
+              :data-file-diff-row="String(index)"
+            >
+                <pre :class="fileDiffCellClass(row, 'old')">{{ fileDiffCellText(row, 'old') }}</pre>
+                <pre :class="fileDiffCellClass(row, 'new')">{{ fileDiffCellText(row, 'new') }}</pre>
+              </div>
+            </div>
+          </main>
+
+          <footer class="file-diff-dialog__footer">
+            <div class="file-diff-dialog__navigation">
+              <button
+                type="button"
+                :disabled="fileDiffChangeIndexes.length === 0"
+                @click="navigateFileDiffChange(-1)"
+              >
+                Previous Change
+              </button>
+              <button
+                type="button"
+                :disabled="fileDiffChangeIndexes.length === 0"
+                @click="navigateFileDiffChange(1)"
+              >
+                Next Change
+              </button>
+            </div>
+            <button type="button" @click="closeCheckInFileDiff">Close</button>
+          </footer>
+        </section>
+      </div>
+    </Teleport>
   </section>
 </template>
 
@@ -319,6 +460,7 @@ import { init, use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import MessageBox from "../../shared/components/MessageBox.vue";
 import ProjectDialog from "../components/ProjectDialog.vue";
+import { fetchCheckInMetricFileDiff, fetchCheckInMetricFiles } from "../api/projectApi.js";
 import { useProjectAdministration } from "../composables/useProjectAdministration.js";
 
 use([CanvasRenderer, GridComponent, LineChart, TooltipComponent]);
@@ -358,6 +500,9 @@ const {
 
 const projectContextMenu = ref(null);
 const projectTooltip = ref(null);
+const checkInFileTooltip = ref(null);
+const fileDiffDialog = ref(null);
+const graphMetricTooltip = ref(null);
 const activePresentationTab = ref("table");
 const selectedGraphType = ref("checkInCount");
 const selectedGraphGrouping = ref("daily");
@@ -365,13 +510,21 @@ const selectedGraphTypeRequiresProject = true;
 const showCheckInTime = ref(false);
 const selectedRepositoryFilter = ref("");
 const metricChartElement = ref(null);
+const fileDiffViewElement = ref(null);
 let metricChart;
 let selectedProjectRowElement;
+let checkInFileTooltipRequestId = 0;
+const checkInFileCache = new Map();
 
 const selectedPresentationProject = computed(() =>
   projects.value.find((project) => String(project.projectId) === String(selectedPresentationProjectId.value))
 );
 const selectedPresentationRepositories = computed(() => selectedPresentationProject.value?.repositories ?? []);
+const fileDiffChangeIndexes = computed(() =>
+  fileDiffDialog.value?.rows
+    .map((row, index) => (isFileDiffChangeRow(row) ? index : null))
+    .filter((index) => index !== null) ?? []
+);
 const filteredCheckInMetrics = computed(() => {
   if (!selectedRepositoryFilter.value) {
     return checkInMetrics.value;
@@ -449,6 +602,198 @@ function moveProjectTooltip(event) {
 
 function closeProjectTooltip() {
   projectTooltip.value = null;
+}
+
+async function openCheckInFileTooltip(event, metric) {
+  const requestId = ++checkInFileTooltipRequestId;
+  const cacheKey = String(metric.checkInMetricId);
+
+  checkInFileTooltip.value = {
+    metric,
+    files: checkInFileCache.get(cacheKey) ?? [],
+    isLoading: !checkInFileCache.has(cacheKey),
+    errorMessage: "",
+    ...checkInFileTooltipPosition(event),
+  };
+
+  if (checkInFileCache.has(cacheKey)) {
+    return;
+  }
+
+  try {
+    const result = await fetchCheckInMetricFiles(selectedPresentationProjectId.value, metric.checkInMetricId);
+    const files = result.files ?? [];
+    checkInFileCache.set(cacheKey, files);
+
+    if (requestId === checkInFileTooltipRequestId && checkInFileTooltip.value?.metric === metric) {
+      checkInFileTooltip.value = {
+        ...checkInFileTooltip.value,
+        files,
+        isLoading: false,
+      };
+    }
+  } catch (error) {
+    if (requestId === checkInFileTooltipRequestId && checkInFileTooltip.value?.metric === metric) {
+      checkInFileTooltip.value = {
+        ...checkInFileTooltip.value,
+        files: [],
+        isLoading: false,
+        errorMessage: error.message || "Dateien konnten nicht gelesen werden.",
+      };
+    }
+  }
+}
+
+function closeCheckInFileTooltip() {
+  checkInFileTooltipRequestId += 1;
+  checkInFileTooltip.value = null;
+}
+
+function closeCheckInFileTooltipAfterLeave(event) {
+  const nextElement = event?.relatedTarget;
+  closeCheckInFileTooltip();
+
+  if (!graphMetricTooltip.value) {
+    return;
+  }
+
+  const movedBackToGraphTooltip = nextElement instanceof Element && nextElement.closest(".graph-metric-tooltip");
+  const movedBackToGraphArea = nextElement instanceof Element && metricChartElement.value?.contains(nextElement);
+
+  if (!movedBackToGraphTooltip && !movedBackToGraphArea) {
+    graphMetricTooltip.value = null;
+  }
+}
+
+function closeCheckInFileTooltipIfOutside(event) {
+  const nextElement = event.relatedTarget;
+
+  if (nextElement instanceof Element && nextElement.closest(".check-in-file-tooltip")) {
+    return;
+  }
+
+  closeCheckInFileTooltip();
+}
+
+function keepCheckInFileTooltipOpen() {
+  checkInFileTooltipRequestId += 1;
+}
+
+async function openCheckInFileDiff(file) {
+  const metric = checkInFileTooltip.value?.metric;
+
+  if (!metric) {
+    return;
+  }
+
+  fileDiffDialog.value = {
+    metric,
+    file,
+    rows: [],
+    currentChangeIndex: -1,
+    isLoading: true,
+    errorMessage: "",
+  };
+
+  try {
+    const result = await fetchCheckInMetricFileDiff(
+      selectedPresentationProjectId.value,
+      metric.checkInMetricId,
+      file.path
+    );
+
+    fileDiffDialog.value = {
+      ...fileDiffDialog.value,
+      rows: result.rows ?? [],
+      currentChangeIndex: -1,
+      isLoading: false,
+    };
+  } catch (error) {
+    fileDiffDialog.value = {
+      ...fileDiffDialog.value,
+      rows: [],
+      currentChangeIndex: -1,
+      isLoading: false,
+      errorMessage: error.message || "Dateidiff konnte nicht gelesen werden.",
+    };
+  }
+}
+
+function closeCheckInFileDiff() {
+  fileDiffDialog.value = null;
+}
+
+function fileDiffCellClass(row, side) {
+  const sideType = fileDiffCellType(row, side);
+  return ["file-diff-view__cell", `file-diff-view__cell--${sideType}`];
+}
+
+function isFileDiffChangeRow(row) {
+  return ["changed", "deleted", "added"].includes(row.type);
+}
+
+async function navigateFileDiffChange(direction) {
+  if (!fileDiffDialog.value || !fileDiffChangeIndexes.value.length) {
+    return;
+  }
+
+  const changeCount = fileDiffChangeIndexes.value.length;
+  const currentIndex = fileDiffDialog.value.currentChangeIndex ?? -1;
+  const nextIndex = (currentIndex + direction + changeCount) % changeCount;
+  fileDiffDialog.value = {
+    ...fileDiffDialog.value,
+    currentChangeIndex: nextIndex,
+  };
+
+  await nextTick();
+
+  const rowIndex = fileDiffChangeIndexes.value[nextIndex];
+  const rowElement = fileDiffViewElement.value?.querySelector(`[data-file-diff-row="${rowIndex}"]`);
+
+  if (!rowElement || !fileDiffViewElement.value) {
+    return;
+  }
+
+  const targetTop = rowElement.offsetTop - fileDiffViewElement.value.clientHeight / 2 + rowElement.clientHeight / 2;
+  fileDiffViewElement.value.scrollTo({
+    top: Math.max(0, targetTop),
+    behavior: "smooth",
+  });
+}
+
+function fileDiffCellText(row, side) {
+  if (row.type === "deleted" && side === "new") {
+    return "";
+  }
+
+  if (row.type === "added" && side === "old") {
+    return "";
+  }
+
+  return side === "old" ? row.oldText : row.newText;
+}
+
+function fileDiffCellType(row, side) {
+  if (row.type === "changed") {
+    return side === "old" ? "deleted" : "added";
+  }
+
+  if (row.type === "deleted") {
+    return side === "old" ? "deleted" : "empty";
+  }
+
+  if (row.type === "added") {
+    return side === "new" ? "added" : "empty";
+  }
+
+  return row.type;
+}
+
+function checkInFileTooltipPosition(event) {
+  return {
+    x: event.clientX - 8,
+    y: event.clientY,
+  };
 }
 
 function closeContextMenuOutsideHoverAreas(event) {
@@ -541,6 +886,18 @@ function formatBoolean(value) {
   return value ? "Ja" : "Nein";
 }
 
+function formatGitFileStatus(status) {
+  if (status.startsWith("R")) {
+    return "R";
+  }
+
+  if (status.startsWith("C")) {
+    return "C";
+  }
+
+  return status;
+}
+
 async function renderMetricChart() {
   if (activePresentationTab.value !== "graph") {
     metricChart?.dispose();
@@ -567,16 +924,21 @@ async function renderMetricChart() {
       left: 54,
     },
     tooltip: {
-      trigger: "axis",
-      appendToBody: true,
-      className: "metric-chart-tooltip",
-      confine: true,
-      formatter: formatMetricChartTooltip,
-      position(point, _params, _dom, _rect, size) {
-        const tooltipWidth = size.contentSize[0];
-        const tooltipHeight = size.contentSize[1];
-        return [point[0] - tooltipWidth / 2, point[1] - tooltipHeight - 12];
-      },
+      show: false,
+      /*
+       * Alter ECharts-Tooltip als Rueckfalloption.
+       *
+       * trigger: "axis",
+       * appendToBody: true,
+       * className: "metric-chart-tooltip",
+       * confine: true,
+       * formatter: formatMetricChartTooltip,
+       * position(point, _params, _dom, _rect, size) {
+       *   const tooltipWidth = size.contentSize[0];
+       *   const tooltipHeight = size.contentSize[1];
+       *   return [point[0] - tooltipWidth / 2, point[1] - tooltipHeight - 12];
+       * },
+       */
     },
     xAxis: {
       type: "category",
@@ -606,6 +968,82 @@ async function renderMetricChart() {
 
 function resizeMetricChart() {
   metricChart?.resize();
+}
+
+function openGraphMetricTooltip(event) {
+  if (!metricChartElement.value || !metricChartData.value.buckets.length) {
+    graphMetricTooltip.value = null;
+    return;
+  }
+
+  const bucketIndex = graphBucketIndexFromMouseEvent(event);
+  const bucket = metricChartData.value.buckets[bucketIndex];
+
+  if (!bucket) {
+    graphMetricTooltip.value = null;
+    return;
+  }
+
+  if (graphMetricTooltip.value?.bucketIndex === bucketIndex) {
+    return;
+  }
+
+  graphMetricTooltip.value = {
+    bucketIndex,
+    bucket,
+    value: metricChartData.value.values[bucketIndex],
+    x: event.clientX,
+    y: event.clientY - 12,
+  };
+}
+
+function closeGraphMetricTooltip(event) {
+  const nextElement = event?.relatedTarget;
+
+  if (
+    nextElement instanceof Element &&
+    (nextElement.closest(".graph-metric-tooltip") || nextElement.closest(".check-in-file-tooltip"))
+  ) {
+    return;
+  }
+
+  graphMetricTooltip.value = null;
+}
+
+function closeGraphTooltipsIfOutside(event) {
+  const nextElement = event?.relatedTarget;
+
+  if (
+    nextElement instanceof Element &&
+    (nextElement.closest(".graph-metric-tooltip") || nextElement.closest(".check-in-file-tooltip"))
+  ) {
+    return;
+  }
+
+  graphMetricTooltip.value = null;
+  closeCheckInFileTooltip();
+}
+
+function keepGraphMetricTooltipOpen() {
+  // Das Popover bleibt bewusst an seiner Ursprungposition stehen.
+}
+
+function graphBucketIndexFromMouseEvent(event) {
+  const bucketCount = metricChartData.value.buckets.length;
+
+  if (bucketCount <= 1) {
+    return 0;
+  }
+
+  const bounds = metricChartElement.value.getBoundingClientRect();
+  const gridLeft = 54;
+  const gridRight = 26;
+  const plotLeft = bounds.left + gridLeft;
+  const plotWidth = Math.max(1, bounds.width - gridLeft - gridRight);
+  const relativeX = Math.min(Math.max(event.clientX - plotLeft, 0), plotWidth);
+  const ratio = relativeX / plotWidth;
+
+  return Math.min(bucketCount - 1, Math.max(0, Math.round(ratio * (bucketCount - 1))));
 }
 
 function buildMetricChartData(metrics, graphType, grouping) {
@@ -730,6 +1168,18 @@ function metricTooltipDetail(metric, graphType) {
 
   if (graphType === "netLineChange" || graphType === "sourceCodeGrowth") {
     return ` · Net ${escapeHtml(formatSignedNumber(metric.netLineChange ?? 0))} · Added ${escapeHtml(String(metric.addedLineCount ?? 0))} · Deleted ${escapeHtml(String(metric.deletedLineCount ?? 0))}`;
+  }
+
+  return "";
+}
+
+function metricTooltipDetailText(metric, graphType) {
+  if (graphType === "trackedFileCount") {
+    return ` - Files ${metric.trackedFileCount ?? 0}`;
+  }
+
+  if (graphType === "netLineChange" || graphType === "sourceCodeGrowth") {
+    return ` - Net ${formatSignedNumber(metric.netLineChange ?? 0)} - Added ${metric.addedLineCount ?? 0} - Deleted ${metric.deletedLineCount ?? 0}`;
   }
 
   return "";

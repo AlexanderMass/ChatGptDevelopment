@@ -58,6 +58,42 @@ export async function findCheckInMetricsByProjectId(projectId) {
   }));
 }
 
+export async function findCheckInMetricGitReference(projectId, checkInMetricId) {
+  const [rows] = await getConnectionPool().execute(
+    `
+      SELECT
+        m.checkInMetricId,
+        m.commitHash,
+        r.repositoryId,
+        r.path AS repositoryPath
+      FROM check_in_metric m
+      INNER JOIN git_repository r
+        ON r.repositoryId = m.repositoryId
+      INNER JOIN chat_gpt_project p
+        ON p.projectId = r.projectId
+      WHERE p.projectId = :projectId
+        AND m.checkInMetricId = :checkInMetricId
+    `,
+    {
+      projectId,
+      checkInMetricId
+    }
+  );
+
+  const row = rows[0];
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    checkInMetricId: row.checkInMetricId,
+    commitHash: row.commitHash,
+    repositoryId: row.repositoryId,
+    repositoryPath: row.repositoryPath
+  };
+}
+
 export async function findLastCheckInMetricDate(repositoryId) {
   const [rows] = await getConnectionPool().execute(
     `
