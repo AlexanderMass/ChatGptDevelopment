@@ -8,6 +8,7 @@ Der Ordner ist bewusst so angelegt, dass seine Inhalte in andere Projekte kopier
 
 - `Processes`: wiederverwendbare Vorgehensmodelle und Arbeitsprozesse
 - `Ressources`: wiederverwendbare Ressourcen, Werkzeugentscheidungen, Checklisten und Referenzen
+- `CodingExperience`: praktische Umsetzungserfahrungen aus konkreten Projekten
 
 ## Arbeitsprinzip
 
@@ -19,9 +20,9 @@ Typische Inhalte:
 - modellgetriebene Analyse mit Use Cases, Datenmodellierung und Designobjekten
 - agile oder backlogorientierte Prozesssichten für Einzelentwickler
 - Werkzeugentscheidungen und Architekturressourcen
+- praktische Coding-Erfahrungen zu eingesetzten Ressourcen
 - Regeln für Dokumentationssynchronisation zwischen Analyse und Implementierung
 
 ## Verwendung in anderen Projekten
 
 Für neue Projekte kann der Ordner ganz oder teilweise kopiert werden. Danach sollte im Zielprojekt entschieden werden, welche Prozessdateien aktiv gelten und welche nur als Referenz dienen.
-
