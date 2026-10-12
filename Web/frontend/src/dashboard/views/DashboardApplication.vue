@@ -316,6 +316,7 @@
     <Teleport to="body">
       <div
         v-if="checkInFileTooltip"
+        ref="checkInFileTooltipElement"
         class="check-in-file-tooltip"
         :style="{ left: `${checkInFileTooltip.x}px`, top: `${checkInFileTooltip.y}px` }"
         @mouseenter="keepCheckInFileTooltipOpen"
@@ -501,6 +502,7 @@ const {
 const projectContextMenu = ref(null);
 const projectTooltip = ref(null);
 const checkInFileTooltip = ref(null);
+const checkInFileTooltipElement = ref(null);
 const fileDiffDialog = ref(null);
 const graphMetricTooltip = ref(null);
 const activePresentationTab = ref("table");
@@ -615,6 +617,7 @@ async function openCheckInFileTooltip(event, metric) {
     errorMessage: "",
     ...checkInFileTooltipPosition(event),
   };
+  await constrainCheckInFileTooltipPosition();
 
   if (checkInFileCache.has(cacheKey)) {
     return;
@@ -631,6 +634,7 @@ async function openCheckInFileTooltip(event, metric) {
         files,
         isLoading: false,
       };
+      await constrainCheckInFileTooltipPosition();
     }
   } catch (error) {
     if (requestId === checkInFileTooltipRequestId && checkInFileTooltip.value?.metric === metric) {
@@ -640,6 +644,7 @@ async function openCheckInFileTooltip(event, metric) {
         isLoading: false,
         errorMessage: error.message || "Dateien konnten nicht gelesen werden.",
       };
+      await constrainCheckInFileTooltipPosition();
     }
   }
 }
@@ -791,9 +796,20 @@ function fileDiffCellType(row, side) {
 
 function checkInFileTooltipPosition(event) {
   return {
-    x: event.clientX - 8,
+    x: Math.max(8, Math.min(event.clientX - 8, window.innerWidth - Math.min(720, window.innerWidth * 0.82) - 8)),
     y: event.clientY,
   };
+}
+
+async function constrainCheckInFileTooltipPosition() {
+  await nextTick();
+  const element = checkInFileTooltipElement.value;
+  const tooltip = checkInFileTooltip.value;
+  if (!element || !tooltip) return;
+
+  const { width, height } = element.getBoundingClientRect();
+  tooltip.x = Math.max(8, Math.min(tooltip.x, window.innerWidth - width - 8));
+  tooltip.y = Math.max(height + 8, Math.min(tooltip.y, window.innerHeight - 8));
 }
 
 function closeContextMenuOutsideHoverAreas(event) {

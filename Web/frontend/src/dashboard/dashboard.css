@@ -460,10 +460,10 @@
 .check-in-file-tooltip {
   position: fixed;
   z-index: 45;
-  transform: translate(-100%, -100%);
+  transform: translateY(-100%);
   width: min(720px, 82vw);
   max-height: min(360px, 70vh);
-  overflow: hidden;
+  overflow: auto;
   padding: 10px 12px;
   border: 1px solid rgba(31, 42, 46, 0.16);
   border-radius: 16px;
