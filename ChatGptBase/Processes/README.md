@@ -13,6 +13,7 @@ Die Prozessdateien beschreiben Arbeitsweisen, die in mehreren Projekten instanzi
 - `EntwicklungsProzessSicht.md`: Prozessuale Sicht auf Epics, Stories, Status und Fortschritt
 - `MyAiScrum.md`: Persönliches Scrum-Derivat für Mensch-KI-Arbeit mit Epics, Stories und optionalen Tasks
 - `NeuesProjekt.md`: Startmuster für neue Projekte mit Grundordnern, Kontextstruktur und Mensch-KI-Zusammenarbeit
+- [NutzungObsidian.md](NutzungObsidian.md): Obsidian als Markdown- und Wissenswerkzeug sowie optionale Erweiterung zum LLM-Wiki nach Karpathy und OKF
 
 ## Leitidee
 
