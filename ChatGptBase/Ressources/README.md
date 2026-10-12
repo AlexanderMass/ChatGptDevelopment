@@ -9,6 +9,7 @@ Ressourcen sind keine vollstaendigen Vorgehensmodelle, sondern Hilfsmittel, Ents
 - [Caddy Webserver](CaddyWebServer.md): lokaler statischer Webserver, Aktualisierung von Frontend-Ressourcen, Servicepruefung, Neustart und Zusammenspiel mit Node.js.
 - [Task Worker Orchestrator](TaskWorkerOrchestrator.md): Celery-basierte Worker-Orchestrierung fuer asynchrone Verarbeitung, Batch-Jobs und Hintergrundaufgaben ausserhalb von REST-Requests.
 - [Cytoscape.js](Cytoscape.md): optionale Bibliothek fuer Graphennetze, Mindmaps, Use-Case-Netze und modellgetriebene Knoten-Kanten-Darstellungen.
+- [Dokumentationstools](Dokumentationstools.md): reproduzierbare Werkzeugkette von Markdown ueber Pandoc und LuaLaTeX zum PDF sowie vektorbasierte Abbildungsverarbeitung mit Inkscape.
 - [ECharts](ECharts.md): Graphen- und Diagrammbibliothek fuer Metrikvisualisierungen, Zeitreihen, Dashboard-Charts und Line-Charts.
 - [FastAPI Server](FastAPIServer.md): lokale Python-REST-Schicht fuer Webapplikationen, Health- und Logging-Endpunkte, Datenbankzugriffe und spaetere Jobsteuerung.
 - [Message Broker](MessageBroker.md): Redis-basierte Broker- und Queue-Ressource zur Entkopplung von API-Servern und Worker-Prozessen.
