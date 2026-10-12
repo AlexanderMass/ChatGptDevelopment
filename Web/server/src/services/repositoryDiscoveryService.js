@@ -34,7 +34,6 @@ async function findGitRepositories(rootDirectory) {
 
     if (hasGitMarker) {
       repositories.push(directory);
-      return;
     }
 
     for (const entry of entries) {
